@@ -4,6 +4,7 @@
 #include "../include/memory.h"
 #include "../include/buddy.h"
 #include "../include/cache.h"
+#include "../include/vm.h"
 
 using namespace std;
 
@@ -55,6 +56,26 @@ int main() {
             cout << "Memory initialized\n";
         }
 
+        else if (cmd == "vm_init") {
+    int vsize, psize, page;
+    cin >> vsize >> psize >> page;
+
+    init_vm(vsize, psize, page);
+}
+else if (cmd == "vm_access") {
+    int vaddr;
+    cin >> vaddr;
+
+    int paddr = vm_access(vaddr);
+    cout << "Physical address = " << paddr << "\n";
+
+    if (paddr != -1)
+        cache_access(paddr);
+}
+else if (cmd == "vm_table") {
+    dump_page_table();
+}
+
 
         else if (cmd == "alloc") {
             string type;
@@ -93,27 +114,38 @@ int main() {
                 cout << "Allocation failed\n";
             } else {
                 workload.push_back({ALLOC_EVENT, size});
-                cout << "Allocated at address " << addr << "\n";
+                int id = get_block_id(addr);
+
+cout << "Allocated block id=" << id
+     << " at address=0x"
+     << hex << addr << dec << "\n";
+
                 cache_access(addr);
             }
         }
 
 
         else if (cmd == "free") {
-            int addr;
-            cin >> addr;
+    int id;
+    cin >> id;
 
-            if (buddy_mode) {
-                buddy->buddy_free(addr);
-            } else {
-                free_block(addr);
-            }
+    int addr = get_block_start_by_id(id);
 
-            workload.push_back({FREE_EVENT, addr});
-            cache_access(addr);
+    if (addr == -1) {
+        cout << "No block with id=" << id << "\n";
+        continue;
+    }
 
-            cout << "Block freed\n";
-        }
+    if (buddy_mode)
+        buddy->buddy_free(addr);
+    else
+        free_block(addr);
+
+    workload.push_back({FREE_EVENT, addr});
+
+    cout << "Block " << id << " freed \n";
+}
+
 
 
         else if (cmd == "access") {
@@ -132,24 +164,31 @@ int main() {
             buddy->dump_free_lists();
         }
 
-        else if (cmd == "stats") {
-            cout << "Internal Fragmentation: "
-                 << internal_fragmentation() << "\n";
+       else if (cmd == "stats") {
 
-            cout << "External Fragmentation: "
-                 << external_fragmentation() << "\n";
+    cout << "----- Memory -----\n";
+    cout << "Internal Fragmentation: " << internal_fragmentation() << "\n";
+    cout << "External Fragmentation: " << external_fragmentation() << "\n";
+    cout << "Memory Utilization: " << memory_utilization() << "%\n";
+    allocation_stats();
 
-            cout << "Memory Utilization: "
-                 << memory_utilization() << "%\n";
+    cout << "\n----- Virtual Memory -----\n";
+    int hits = get_page_hits();
+    int faults = get_page_faults();
+    int total = hits + faults;
 
-            allocation_stats();
-        }
+    cout << "Page Hits: " << hits << "\n";
+    cout << "Page Faults: " << faults << "\n";
 
-        else if (cmd == "cache_stats") {
-            L1->print_stats("L1");
-            L2->print_stats("L2");
-        }
+    if (total > 0)
+        cout << "Fault Rate: " << (faults * 100.0 / total) << "%\n";
+    else
+        cout << "Fault Rate: 0%\n";
 
+    cout << "\n----- Cache -----\n";
+    L1->print_stats("L1");
+    L2->print_stats("L2");
+}
         else if (cmd == "compare") {
             compare_strategies();
         }

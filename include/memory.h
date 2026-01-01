@@ -10,11 +10,17 @@ using namespace std;
 extern int total_memory_size;
 
 
+extern int next_block_id;
+
 struct Block {
     int start;
     int size;
     bool free;
+    int id;   
 };
+
+int get_block_id(int start_address);
+int get_block_start_by_id(int id);
 
 
 extern list<Block> memory_blocks;
