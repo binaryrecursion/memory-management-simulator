@@ -16,5 +16,6 @@ struct Block {
 
 void init_memory(int total_size);
 void dump_memory();
+int malloc_first_fit(int size);
 
 #endif

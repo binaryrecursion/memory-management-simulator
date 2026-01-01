@@ -20,3 +20,22 @@ void dump_memory() {
              << (b.free ? "FREE\n" : "ALLOCATED\n");
     }
 }
+int malloc_first_fit(int size) {
+    for (auto it = memory_blocks.begin(); it != memory_blocks.end(); ++it) {
+        if (it->free && it->size >= size) {
+            int addr = it->start;
+            if (it->size == size) {
+                it->free = false;
+            } else {
+                Block alloc{it->start, size, false};
+                Block rem{it->start + size, it->size - size, true};
+                it = memory_blocks.erase(it);
+                it = memory_blocks.insert(it, alloc);
+                memory_blocks.insert(++it, rem);
+            }
+            return addr;
+        }
+    }
+    return -1;
+}
+
