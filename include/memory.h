@@ -9,6 +9,7 @@
 using namespace std;
 extern int total_memory_size;
 
+
 struct Block {
     int start;
     int size;
@@ -40,6 +41,7 @@ extern int failed_allocs;
 
 void allocation_stats();
 
+
 enum EventType {
     ALLOC_EVENT,
     FREE_EVENT
@@ -47,10 +49,11 @@ enum EventType {
 
 struct Event {
     EventType type;
-    int value;   
+    int value; 
 };
 
 extern vector<Event> workload;
+
 
 void compare_strategies();
 

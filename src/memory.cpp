@@ -9,6 +9,7 @@ int successful_allocs = 0;
 int failed_allocs = 0;
 int total_memory_size = 0;
 
+
 list<Block> memory_blocks;
 vector<Event> workload;
 
@@ -70,7 +71,7 @@ int malloc_first_fit(int size) {
         }
     }
 failed_allocs++;
-    return -1;
+    return -1; 
 }
 
 void free_block(int start_address) {
@@ -91,6 +92,7 @@ void free_block(int start_address) {
                     it = prev;
                 }
             }
+
 
             auto next = it;
             ++next;
@@ -178,7 +180,6 @@ int internal_fragmentation() {
 
     for (auto &b : memory_blocks) {
         if (!b.free) {
-
             internal += 0;
         }
     }
@@ -232,6 +233,7 @@ static void reset_simulation(int mem_size) {
     failed_allocs = 0;
 }
 
+
 struct Result {
     int ext_frag;
     double util;
@@ -259,6 +261,7 @@ static Result replay(const string &type) {
 
     return r;
 }
+
 static Result replay_buddy() {
     BuddyAllocator buddy_test(total_memory_size, 128);
 
@@ -285,6 +288,7 @@ static Result replay_buddy() {
 
     return r;
 }
+
 void compare_strategies() {
     if (workload.empty()) {
         cout << "No workload recorded.\n";
