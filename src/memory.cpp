@@ -1,14 +1,13 @@
 #include <list>
 #include <iostream>
 #include "../include/memory.h"
-
+#include "../include/buddy.h"
 
 using namespace std;
 int total_alloc_requests = 0;
 int successful_allocs = 0;
 int failed_allocs = 0;
 int total_memory_size = 0;
-
 
 list<Block> memory_blocks;
 vector<Event> workload;
@@ -62,7 +61,6 @@ int malloc_first_fit(int size) {
                 it = memory_blocks.erase(it);
 
 
-
                 it = memory_blocks.insert(it, allocated);
                 ++it;
                 memory_blocks.insert(it, remaining);
@@ -72,8 +70,7 @@ int malloc_first_fit(int size) {
         }
     }
 failed_allocs++;
-    return -1; 
-    
+    return -1;
 }
 
 void free_block(int start_address) {
@@ -94,7 +91,6 @@ void free_block(int start_address) {
                     it = prev;
                 }
             }
-
 
             auto next = it;
             ++next;
@@ -236,7 +232,6 @@ static void reset_simulation(int mem_size) {
     failed_allocs = 0;
 }
 
-
 struct Result {
     int ext_frag;
     double util;
@@ -264,9 +259,32 @@ static Result replay(const string &type) {
 
     return r;
 }
+static Result replay_buddy() {
+    BuddyAllocator buddy_test(total_memory_size, 128);
 
+    int total_allocs = 0;
+    int successful = 0;
 
+    for (auto &e : workload) {
+        if (e.type == ALLOC_EVENT) {
+            total_allocs++;
+            int addr = buddy_test.buddy_malloc(e.value);
+            if (addr != -1)
+                successful++;
+        } else {
+            buddy_test.buddy_free(e.value);
+        }
+    }
 
+    Result r;
+    r.ext_frag = 0; 
+    r.util = (buddy_test.get_used_memory() * 100.0) / total_memory_size;
+    r.success = total_allocs
+        ? (successful * 100.0 / total_allocs)
+        : 0.0;
+
+    return r;
+}
 void compare_strategies() {
     if (workload.empty()) {
         cout << "No workload recorded.\n";
@@ -276,6 +294,7 @@ void compare_strategies() {
     Result ff = replay("ff");    
     Result bf = replay("bf");
     Result wf = replay("wf");
+    Result buddy = replay_buddy();
 
 
     cout << "\nStrategy   ExtFrag   Utilization   SuccessRate\n";
@@ -285,5 +304,7 @@ void compare_strategies() {
          << bf.util << "%        " << bf.success << "%\n";
     cout << "WF         " << wf.ext_frag << "        "
          << wf.util << "%        " << wf.success << "%\n";
+         cout << "Buddy      " << buddy.ext_frag << "        "
+     << buddy.util << "%        " << buddy.success << "%\n";
 
 }

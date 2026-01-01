@@ -2,10 +2,15 @@
 #include <string>
 
 #include "../include/memory.h"
+#include "../include/buddy.h"
 
 
 using namespace std;
 
+
+BuddyAllocator* buddy = nullptr;
+
+bool buddy_mode = false;
 
 
 int main() {
@@ -24,6 +29,12 @@ int main() {
 
             init_memory(size);
 
+            delete buddy;
+
+            buddy = new BuddyAllocator(size, 128);
+
+
+            buddy_mode = false;
 
             cout << "Memory initialized\n";
         }
@@ -36,18 +47,25 @@ int main() {
             int addr = -1;
 
             if (type == "ff") {
-
+                buddy_mode = false;
                 addr = malloc_first_fit(size);
             }
             else if (type == "bf") {
-
+                buddy_mode = false;
                 addr = malloc_best_fit(size);
             }
             else if (type == "wf") {
-
+                buddy_mode = false;
                 addr = malloc_worst_fit(size);
             }
-   
+            else if (type == "buddy") {
+                if (!buddy) {
+                    cout << "Initialize memory first\n";
+                    continue;
+                }
+                buddy_mode = true;
+                addr = buddy->buddy_malloc(size);
+            }
             else {
                 cout << "Unknown allocator\n";
                 continue;
@@ -59,7 +77,6 @@ int main() {
             } else {
                 workload.push_back({ALLOC_EVENT, size});
                 cout << "Allocated at address " << addr << "\n";
-
             }
         }
 
@@ -67,22 +84,31 @@ int main() {
             int addr;
             cin >> addr;
 
+            if (buddy_mode) {
+                buddy->buddy_free(addr);
+            } else {
                 free_block(addr);
+            }
 
             workload.push_back({FREE_EVENT, addr});
 
             cout << "Block freed\n";
         }
 
+        else if (cmd == "access") {
+            int addr;
+            cin >> addr;
 
-     
-
+            cout << "Accessed address " << addr << "\n";
+        }
 
         else if (cmd == "dump") {
             dump_memory();
         }
 
-
+        else if (cmd == "dump_buddy") {
+            buddy->dump_free_lists();
+        }
 
         else if (cmd == "stats") {
             cout << "Internal Fragmentation: "
@@ -96,6 +122,7 @@ int main() {
 
             allocation_stats();
         }
+
 
         else if (cmd == "compare") {
             compare_strategies();
