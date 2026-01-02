@@ -51,7 +51,7 @@ extern int successful_allocs;
 extern int failed_allocs;
 
 void allocation_stats();
-
+void reset_allocation_stats();
 
 enum EventType {
     ALLOC_EVENT,

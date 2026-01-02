@@ -4,7 +4,7 @@
 #include <iomanip>
 #include "../include/memory.h"
 #include "../include/buddy.h"
-
+#include <sstream>
 using namespace std;
 
 
@@ -35,6 +35,11 @@ void init_memory(int total_size) {
     memory_blocks.push_back(initial);
 }
 
+void reset_allocation_stats() {
+   total_alloc_requests = 0;
+    successful_allocs  = 0;
+    failed_allocs    = 0;
+}
 
 void dump_memory() {
     cout << "----- Memory Dump -----\n";
@@ -272,6 +277,7 @@ static void reset_simulation(int mem_size) {
 
 struct Result {
     int ext_frag;
+    int int_frag;
     double util;
     double success;
 };
@@ -291,6 +297,7 @@ static Result replay(const string &type) {
 
     return {
         external_fragmentation(),
+        internal_fragmentation(),
         memory_utilization(),
         total_alloc_requests
             ? (successful_allocs * 100.0 / total_alloc_requests)
@@ -298,27 +305,52 @@ static Result replay(const string &type) {
     };
 }
 
+
 static Result replay_buddy() {
     BuddyAllocator buddy_test(total_memory_size, 128);
 
-    int total_allocs = 0, successful = 0;
+    unordered_map<int, int> alloc_req; // addr -> requested size
+    int total_allocs = 0;
+    int successful = 0;
+    int internal_frag = 0;
 
     for (auto &e : workload) {
         if (e.type == ALLOC_EVENT) {
             total_allocs++;
-            if (buddy_test.buddy_malloc(e.value) != -1)
+
+            int addr = buddy_test.buddy_malloc(e.value);
+            if (addr != -1) {
                 successful++;
-        } else {
-            buddy_test.buddy_free(e.value);
+
+                int alloc_size = 1 << buddy_test.get_order(addr);
+                alloc_req[addr] = e.value;
+
+                internal_frag += (alloc_size - e.value);
+            }
+        } else { // FREE_EVENT
+            int addr = e.value;
+
+            if (alloc_req.count(addr)) {
+                int alloc_size = 1 << buddy_test.get_order(addr);
+                internal_frag -= (alloc_size - alloc_req[addr]);
+                alloc_req.erase(addr);
+            }
+
+            buddy_test.buddy_free(addr);
         }
     }
 
+    double util = (buddy_test.get_used_memory() * 100.0) / total_memory_size;
+    double success_rate = total_allocs ? (successful * 100.0 / total_allocs) : 0.0;
+
     return {
         0,
-        (buddy_test.get_used_memory() * 100.0) / total_memory_size,
-        total_allocs ? (successful * 100.0 / total_allocs) : 0.0
+        internal_frag,
+        util,
+        success_rate
     };
 }
+
 
 void compare_strategies() {
     if (workload.empty()) {
@@ -330,13 +362,42 @@ void compare_strategies() {
     Result bf = replay("bf");
     Result wf = replay("wf");
     Result buddy = replay_buddy();
+cout << setfill(' ');      // reset padding to spaces
+cout << fixed << setprecision(2);
 
-    cout << "\nStrategy ExtFrag Utilization SuccessRate\n";
-    cout << "FF            " << ff.ext_frag << "     " << ff.util << "%     " << ff.success << "%\n";
-    cout << "BF            " << bf.ext_frag << "     " << bf.util << "%     " << bf.success << "%\n";
-    cout << "WF            " << wf.ext_frag << "     " << wf.util << "%     " << wf.success << "%\n";
-    cout << "Buddy         " << buddy.ext_frag << "     " << buddy.util << "%     " << buddy.success << "%\n";
+
+cout << left
+     << setw(10) << "Strategy"
+     << setw(12) << "IntFrag"
+     << setw(12) << "ExtFrag"
+     << setw(14) << "Utilization"
+     << setw(14) << "SuccessRate"
+     << "\n";
+
+auto print_row = [&](const string& name, const Result& r) {
+    ostringstream util, succ;
+    util << fixed << setprecision(2) << r.util << "%";
+    succ << fixed << setprecision(2) << r.success << "%";
+
+    cout << left
+         << setw(10) << name
+         << setw(12) << r.int_frag
+         << setw(12) << r.ext_frag
+         << setw(14) << util.str()
+         << setw(14) << succ.str()
+         << "\n";
+};
+
+
+
+
+
+    print_row("FF", ff);
+    print_row("BF", bf);
+    print_row("WF", wf);
+    print_row("Buddy", buddy);
 }
+
 int get_block_id(int start_address) {
     for (auto &b : memory_blocks) {
         if (!b.free && b.start == start_address)

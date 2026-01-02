@@ -13,9 +13,15 @@ struct PageTableEntry {
     int last_used;
 };
 
-void init_vm(int pid, int virtual_size, int physical_size, int page_size);
+void reset_vm_system(int physical_size, int page_size);
+
+
+void init_vm(int pid, int virtual_size);
 int vm_access(int pid, int vaddr);
 void dump_page_table(int pid);
+
+bool any_vm_initialized();
+vector<int> get_initialized_pids();
 
 int get_page_hits();
 int get_page_faults();

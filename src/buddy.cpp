@@ -95,13 +95,22 @@ int BuddyAllocator::get_used_memory() const {
     return used_memory;
 }
 
+int BuddyAllocator::get_order(int addr) const {
+    auto it = allocated_order.find(addr);
+    return (it == allocated_order.end()) ? -1 : it->second;
+}
+
+
 void BuddyAllocator::dump_free_lists() {
     cout << "---- Buddy Free Lists ----\n";
     for (int i = min_order; i <= max_order; i++) {
+        if(free_list[i].size()!=0){
         cout << "Order " << i << " (size " << (1 << i) << "): ";
+        
         for (int addr : free_list[i])
-            cout << addr << " ";
+            cout << "0x" << hex << addr << dec << " ";
         cout << "\n";
+        }
     }
 }
 

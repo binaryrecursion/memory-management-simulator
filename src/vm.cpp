@@ -5,10 +5,15 @@
 using namespace std;
 
 static int PAGE_SIZE;
-static int NUM_PAGES;
 static int NUM_FRAMES;
+static int PHYSICAL_MEM_SIZE;
 
-static unordered_map<int, vector<PageTableEntry>> page_tables;
+struct ProcessVM {
+    int num_pages;
+    vector<PageTableEntry> table;
+};
+
+static unordered_map<int, ProcessVM> page_tables;
 
 static vector<int> frame_owner;   
 
@@ -18,22 +23,33 @@ static int page_faults = 0;
 
 int disk_penalty = 200;
 
-
-void init_vm(int pid, int virtual_size, int physical_size, int page_size) {
-
+void reset_vm_system(int physical_size, int page_size) {
+    PHYSICAL_MEM_SIZE = physical_size;
     PAGE_SIZE = page_size;
-    NUM_PAGES = virtual_size / page_size;
-    NUM_FRAMES = physical_size / page_size;
+    NUM_FRAMES = PHYSICAL_MEM_SIZE / PAGE_SIZE;
 
-    page_tables[pid] = vector<PageTableEntry>(
-        NUM_PAGES, {false, -1, 0}
-    );
+    frame_owner.assign(NUM_FRAMES, -1);
+    page_tables.clear();
 
-    if (frame_owner.empty())
-        frame_owner.assign(NUM_FRAMES, -1);
+    page_hits = 0;
+    page_faults = 0;
 
-    cout << "Virtual memory initialized for PID " << pid << "\n";
 }
+
+
+void init_vm(int pid, int virtual_size) {
+
+    int num_pages = virtual_size / PAGE_SIZE;
+
+    ProcessVM vm;
+    vm.num_pages = num_pages;
+    vm.table.assign(num_pages, {false, -1, 0});
+
+    page_tables[pid] = vm;
+
+    cout << "Virtual memory initialized for PID " << pid << " of size: " << virtual_size <<"B\n";
+}
+
 
 
 
@@ -42,23 +58,23 @@ static int choose_victim_frame() {
     int victim = 0;
 
     for (int f = 0; f < NUM_FRAMES; f++) {
-        if (frame_owner[f] == -1) return f;
 
-        int owner = frame_owner[f];
-        for (auto &pt : page_tables) {
-            if (pt.first == owner) {
-                for (auto &pte : pt.second) {
-                    if (pte.valid && pte.frame == f &&
-                        pte.last_used < oldest) {
-                        oldest = pte.last_used;
-                        victim = f;
-                    }
-                }
+        if (frame_owner[f] == -1)
+            return f;
+
+        int owner_pid = frame_owner[f];
+        auto &proc = page_tables[owner_pid];
+
+        for (auto &pte : proc.table) {
+            if (pte.valid && pte.frame == f && pte.last_used < oldest) {
+                oldest = pte.last_used;
+                victim = f;
             }
         }
     }
     return victim;
 }
+
 
 int vm_access(int pid, int vaddr) {
 
@@ -67,17 +83,22 @@ int vm_access(int pid, int vaddr) {
     int page = vaddr / PAGE_SIZE;
     int offset = vaddr % PAGE_SIZE;
 
-    auto &ptable = page_tables[pid];
-    if (page < 0 || page >= NUM_PAGES) {
+    auto &proc = page_tables[pid];
+
+    if (page < 0 || page >= proc.num_pages) {
         cout << "Invalid virtual address: " << vaddr << "\n";
         return -1;
     }
 
-    PageTableEntry &pte = ptable[page];   
+    PageTableEntry &pte = proc.table[page];
+
 
     if (pte.valid) {
         page_hits++;
         pte.last_used = time_counter;
+        cout << "PAGE HIT (PID " << pid
+         << ", page " << page
+         << ", frame " << pte.frame << ")\n";
         return pte.frame * PAGE_SIZE + offset;
     }
 
@@ -91,43 +112,69 @@ int vm_access(int pid, int vaddr) {
 
     if (frame_owner[frame] != -1) {
         int old_pid = frame_owner[frame];
-        for (auto &old_pte : page_tables[old_pid]) {
+
+        auto &old_proc = page_tables[old_pid];
+
+        for (auto &old_pte : old_proc.table) {
             if (old_pte.valid && old_pte.frame == frame) {
+
+                cout << "PAGE EVICTION: PID "
+                    << old_pid << ", frame " << frame << "\n";
+
                 old_pte.valid = false;
+                old_pte.frame = -1;
                 break;
             }
         }
+
     }
+
 
     frame_owner[frame] = pid;
     pte.valid = true;
     pte.frame = frame;
     pte.last_used = time_counter;
-
+cout << "Mapped (PID " << pid
+     << ", page " << page
+     << ") -> frame " << frame << "\n";
     return frame * PAGE_SIZE + offset;
 }
 
 
 
 void dump_page_table(int pid) {
-    auto &ptable = page_tables[pid];
+    auto &proc = page_tables[pid];
 
     cout << "PID " << pid << " Page Table\n";
     cout << "Page\tValid\tFrame\n";
 
-    for (int i = 0; i < ptable.size(); i++) {
+    for (int i = 0; i < proc.num_pages; i++) {
         cout << i << "\t"
-             << ptable[i].valid << "\t"
-             << ptable[i].frame << "\n";
+            << proc.table[i].valid << "\t"
+            << proc.table[i].frame << "\n";
     }
+
+}
+
+bool any_vm_initialized() {
+    return !page_tables.empty();
+}
+
+vector<int> get_initialized_pids() {
+    vector<int> pids;
+    for (auto &pt : page_tables) {
+        pids.push_back(pt.first);
+    }
+    return pids;
 }
 
 int get_used_frames(int pid) {
     int used = 0;
-    for (auto &pte : page_tables[pid])
+    for (auto &pte : page_tables[pid].table)
         if (pte.valid) used++;
     return used;
 }
+
 
 int get_total_frames() {
     return NUM_FRAMES;

@@ -11,6 +11,9 @@ using namespace std;
 BuddyAllocator* buddy = nullptr;
 Cache* L1 = nullptr;
 Cache* L2 = nullptr;
+int PHYSICAL_MEM_SIZE=0;
+int PAGE_SIZE=0;
+int NUM_FRAMES=0;
 
 
 enum AllocatorMode {
@@ -20,36 +23,39 @@ enum AllocatorMode {
 };
 
 AllocatorMode alloc_mode = NONE;
+bool compare_mode = false;
+
 
 
 void cache_access(int addr) {
     if (addr < 0) return;
 
     if (L1->access(addr)) {
-        total_cycles += 1;   
+        total_cycles += l1_penalty;
         cout << "L1 hit!\n";
         return;
     }
 
-    total_cycles += 1;
+    total_cycles += l1_penalty;
 
     if (L2->access(addr)) {
-        total_cycles += 5; 
-        cout << "L1 miss. L2 hit!";
+        total_cycles += l2_penalty;
+        cout << "L1 miss. L2 hit.\n";
         return;
     }
 
-    total_cycles += 5 + 50;
-    cout << "L1 miss. L2 miss. Accessing from main memory....\n";
-    return;
+    total_cycles += l2_penalty + memory_penalty;
+    cout << "L1 miss. L2 miss. Accessing main memory.\n";
 }
+
 
 
 void print_help() {
     cout << "\nCOMMANDS\n";
     cout << "----------------------------------------------------------------------\n";
     cout << "Memory Initialization\n";
-    cout << "    init <bytes>                               Initialize physical memory for allocation\n\n";
+    cout << "    init <bytes> <page_size>                    Initialize physical memory for allocation and\n";
+    cout << "                                                page size for virtual memory simulations.\n\n";
     cout << "Dynamic Allocation - choose b/w [ff/bf/wf] or [buddy] per init\n";
     cout << "    alloc ff <bytes>                            First Fit allocation\n";
     cout << "    alloc bf <bytes>                            Best Fit allocation\n";
@@ -58,20 +64,23 @@ void print_help() {
     cout << "    free <block_id>                             Free allocated block\n\n";
 
     cout << "Virtual Memory (Paging)\n";
-    cout << "    vm_init <pid> <vsize> <psize> <page>        Initialize paging for a process\n";
-    cout << "    vm_access <pid> <vaddr>                     Translate virtual address and access memory\n";
+    cout << "    vm_init <pid> <vsize>                       Initialize paging for a process\n";
+    cout << "    access <pid> <vaddr>                        Translate virtual address and access memory\n";
     cout << "    vm_table <pid>                              Dump page table for process\n\n";
 
     cout << "Inspection & Statistics\n";
     cout << "    dump                                        Dump heap memory layout\n";
-    cout << "    dump_buddy                                  Dump buddy free lists\n";
     cout << "    stats                                       Show memory, VM, and cache stats\n";
     cout << "    compare                                     Compare allocation strategies\n\n";
 
+
     cout << "Utility\n";
     cout << "    clear_workload                              Clear recorded workload\n";
-    cout << "    help                                         Show this help\n";
-    cout << "    exit                                          Quit simulator\n";
+    cout << "    help                                        Show this help\n";
+    cout << "    exit                                        Quit simulator\n\n";
+    cout << "\nNote: Heap allocation and virtual memory are simulated independently.\n";
+    cout << "VM accesses do not validate heap allocation state.\n";
+
     cout << "---------------------------------------------------------------------\n";
 }
 
@@ -86,39 +95,78 @@ int main() {
         cout << ">> ";
         cin >> cmd;
 
+        
+
+        if (compare_mode && cmd != "init" && cmd != "help" && cmd != "exit") {
+            cout << "Error: Simulator must be reinitialized after compare.\n";
+            continue;
+        }
 
         if (cmd == "init") {
-            int size;
-            cin >> size;
+            int size, page;
+            cin >> size >> page;
 
+            if (size % page != 0) {
+                cout << "Error: Physical memory must be divisible by page size.\n";
+                continue;
+            }
+
+            PHYSICAL_MEM_SIZE = size;
+            PAGE_SIZE = page;
+            NUM_FRAMES = size / page;
+reset_allocation_stats();
             init_memory(size);
-
+            reset_vm_system(size, page);   // clears page tables, frame bitmap
+             buddy_ids.clear();
+            workload.clear();
+            compare_mode = false; 
             delete buddy;
             delete L1;
             delete L2;
 
             buddy = new BuddyAllocator(size, 128);
-            L1 = new Cache(256, 16, 2);
-            L2 = new Cache(1024, 16, 4);
+            L1 = nullptr;
+            L2 = nullptr;
+
+            cout << "System memory and page size initialize\n";
+            cout << "Configure - cache :\n";
+            int c1, b1, a1, c2, b2, a2;
+            cout << "Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]\n>>";
+            cin >> c1 >> b1 >> a1;
+            cout << "Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]\n>>";
+            cin >> c2 >> b2 >> a2;
+
+            L1 = new Cache(c1, b1, a1);
+            L2 = new Cache(c2, b2, a2);
+
 
             alloc_mode = NONE;
             total_cycles = 0;
             buddy_ids.clear();
-
-            cout << " Memory Re-initialized (" << size << " bytes)\n";
-            cout << " Allocator mode reset\n";
+            workload.clear();
+            compare_mode = false; 
+            cout << "System initialized\n";
+            cout << "Physical Memory : " << size << " bytes\n";
+            cout << "Page Size (for Virtual Memory simulations)  : " << page << " bytes\n";
+            cout << "Total Frames (for Virtual Memory simulations)  : " << NUM_FRAMES << "\n";
+            cout << "L1 Size: "<< c1 << "B | Block Size:"<<b1<< "B | Assoc: " << a1 << "-way\n";
+            cout << "L2 Size: "<< c2 << "B | Block Size:"<<b2<< "B | Assoc: " << a2 << "-way\n";
         }
-
 
         else if (cmd == "vm_init") {
-            int pid, vsize, psize, page;
-            cin >> pid >> vsize >> psize >> page;
+            if (PAGE_SIZE == 0 || PHYSICAL_MEM_SIZE==0) {
+                cout << "Error: Initialize system first using init.\n";
+                continue;
+            }
+            int pid, vsize;
 
-            init_vm(pid, vsize, psize, page);
+            cin >> pid >> vsize;
+
+            init_vm(pid, vsize);
         }
 
 
-        else if (cmd == "vm_access") {
+        else if (cmd == "access") {
             int pid, vaddr;
             cin >> pid >> vaddr;
 
@@ -187,7 +235,6 @@ int main() {
                      << " at address=0x"
                      << hex << addr << dec << "\n";
 
-                cache_access(addr);
             }
         }
 
@@ -224,45 +271,81 @@ int main() {
         }
 
 
-        else if (cmd == "dump") {
-            dump_memory();
+        else if (cmd == "dump"){
+            if (alloc_mode == BUDDY && buddy) {
+                cout << " Buddy allocator in use \n";
+                buddy->dump_allocations();
+                buddy->dump_free_lists();
+            } 
+            else {
+                cout << "Linear allocator in use \n";
+                dump_memory();
+            }
         }
-
-        else if (cmd == "dump_buddy") {
-            buddy->dump_free_lists();
-        }
+        
+       
 
        else if (cmd == "stats") {
-            cout << "----- Memory -----\n";
+            cout << "=======STATISTICS=======\n";
+            cout << "\n----- Memory -----\n";
 
             if (alloc_mode == LINEAR) {
                 cout << "Allocator Type: Linear (FF/BF/WF)\n";
-                cout << "Internal Fragmentation: " << internal_fragmentation() << "\n";
-                cout << "External Fragmentation: " << external_fragmentation() << "\n";
-                cout << "Memory Utilization: " << memory_utilization() << "%\n";
+
+                int internal = internal_fragmentation();   // currently 0
+                int external = external_fragmentation();
+
+                int total = total_memory_size;
+                int free_mem = 0;
+
+                for (auto &b : memory_blocks)
+                    if (b.free) free_mem += b.size;
+
+                double internal_pct = total ? (internal * 100.0 / total) : 0.0;
+                double external_pct = free_mem ? (external * 100.0 / free_mem) : 0.0;
+
+                cout << "Internal Fragmentation: "
+                    << internal << " bytes ("
+                    << internal_pct << "% of total memory)\n";
+
+                cout << "External Fragmentation: "
+                    << external << " bytes ("
+                    << external_pct << "% of free memory)\n";
+
+                cout << "Memory Utilization: "
+                    << memory_utilization() << "%\n";
+
                 allocation_stats();
             }
+
             else if (alloc_mode == BUDDY) {
                 cout << "Allocator Type: Buddy System\n";
 
                 int used = buddy->get_used_memory();
                 int total = total_memory_size;
                 int internal = buddy->get_internal_fragmentation();
+                int free_mem = total - used;
+
+                double internal_pct = used
+                    ? (internal * 100.0 / used)
+                    : 0.0;
 
                 cout << "Total Memory: " << total << " bytes\n";
                 cout << "Used Memory: " << used << " bytes\n";
-                cout << "Free Memory: " << (total - used) << " bytes\n";
+                cout << "Free Memory: " << free_mem << " bytes\n";
 
                 cout << "Internal Fragmentation: "
-                    << internal << " bytes\n";
+                    << internal << " bytes ("
+                    << internal_pct << "% of allocated memory)\n";
 
-                cout << "External Fragmentation: 0 bytes\n";
+                cout << "External Fragmentation: "
+                    << "0 bytes (0%)\n";
 
                 cout << "Memory Utilization: "
                     << (total ? (used * 100.0 / total) : 0.0)
                     << "%\n";
 
-                cout << "\nPer‑Allocation Fragmentation:\n";
+                cout << "\nPer Allocation Fragmentation:\n";
                 buddy->dump_allocations();
             }
 
@@ -285,17 +368,24 @@ int main() {
             else
                 cout << "Fault Rate: 0%\n";
 
+            cout << "\nPer-Process Frame Usage:\n";
 
-            cout << "\nPer‑Process Frame Usage:\n";
-
-            for (int pid = 1; pid <= 10; pid++) {  
-                int used = get_used_frames(pid);
-                if (used > 0) {
-                    cout << "PID " << pid << ": "
-                        << used << "/" << get_total_frames()
-                        << " frames used\n";
+            if (!any_vm_initialized()) {
+                cout << "No virtual memory initialized for any process.\n";
+            }
+            else {
+                for (int pid : get_initialized_pids()) {
+                    int used = get_used_frames(pid);
+                    if (used == 0)
+                        cout << "PID " << pid << ": NIL\n";
+                    else
+                        cout << "PID " << pid << ": "
+                            << used << "/" << get_total_frames()
+                            << " frames used\n";
                 }
             }
+
+
 
             cout << "\n----- Cache -----\n";
             L1->print_stats("L1");
@@ -306,6 +396,10 @@ int main() {
         
         else if (cmd == "compare") {
             compare_strategies();
+            compare_mode = true;
+            cout << "\nSimulation state invalidated.\n";
+            cout << "Please reinitialize memory using 'init <size>'.\n";
+            cout << "Note: You may clear the workload using 'workload_clear', to analyze new patterns if required.\n";
         }
 
         else if (cmd == "clear_workload") {

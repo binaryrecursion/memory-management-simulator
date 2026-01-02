@@ -33,6 +33,9 @@ public:
     int get_internal_fragmentation() const;
     void dump_allocations() const;
 
+    int get_order(int addr) const;
+
+
 };
 
 #endif
