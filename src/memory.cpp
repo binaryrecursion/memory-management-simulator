@@ -7,7 +7,7 @@
 
 using namespace std;
 
-/* ---------- GLOBAL STATS ---------- */
+
 int total_alloc_requests = 0;
 int successful_allocs = 0;
 int failed_allocs = 0;
@@ -15,11 +15,12 @@ int total_memory_size = 0;
 
 int next_block_id = 1;
 
-/* ---------- GLOBAL MEMORY ---------- */
+
+unordered_map<int,int> buddy_ids;
 list<Block> memory_blocks;
 vector<Event> workload;
 
-/* ---------- INIT ---------- */
+
 void init_memory(int total_size) {
     memory_blocks.clear();
     total_memory_size = total_size;
@@ -34,7 +35,7 @@ void init_memory(int total_size) {
     memory_blocks.push_back(initial);
 }
 
-/* ---------- DUMP (HEX OUTPUT) ---------- */
+
 void dump_memory() {
     cout << "----- Memory Dump -----\n";
 
@@ -56,7 +57,7 @@ void dump_memory() {
     cout << "-----------------------\n";
 }
 
-/* ---------- FIRST FIT ---------- */
+
 int malloc_first_fit(int size) {
     total_alloc_requests++;
 if (size <= 0) {
@@ -96,7 +97,7 @@ if (size <= 0) {
     return -1;
 }
 
-/* ---------- FREE (BY ADDRESS) ---------- */
+
 void free_block(int start_address) {
     for (auto it = memory_blocks.begin(); it != memory_blocks.end(); ++it) {
 
@@ -105,7 +106,7 @@ void free_block(int start_address) {
             it->free = true;
             it->id = -1;
 
-            /* merge with previous */
+
             if (it != memory_blocks.begin()) {
                 auto prev = it;
                 --prev;
@@ -116,7 +117,7 @@ void free_block(int start_address) {
                 }
             }
 
-            /* merge with next */
+
             auto next = it;
             ++next;
             if (next != memory_blocks.end() && next->free) {
@@ -129,14 +130,14 @@ void free_block(int start_address) {
     }
 }
 
-/* ---------- BEST FIT ---------- */
+
 int malloc_best_fit(int size) {
     total_alloc_requests++;
-if (size <= 0) {
-    cout << "Invalid allocation size\n";
-    failed_allocs++;
-    return -1;
-}
+    if (size <= 0) {
+        cout << "Invalid allocation size\n";
+        failed_allocs++;
+        return -1;
+    }
 
     auto best = memory_blocks.end();
 
@@ -174,7 +175,7 @@ if (size <= 0) {
     return alloc_start;
 }
 
-/* ---------- WORST FIT ---------- */
+
 int malloc_worst_fit(int size) {
     total_alloc_requests++;
 if (size <= 0) {
@@ -219,9 +220,9 @@ if (size <= 0) {
     return alloc_start;
 }
 
-/* ---------- METRICS ---------- */
+
 int internal_fragmentation() {
-    return 0;   // exact-size allocation
+    return 0;  
 }
 
 int external_fragmentation() {
@@ -261,7 +262,7 @@ void allocation_stats() {
     cout << "Allocation Success Rate: " << rate << "%\n";
 }
 
-/* ---------- COMPARISON ENGINE ---------- */
+
 static void reset_simulation(int mem_size) {
     init_memory(mem_size);
     total_alloc_requests = 0;
@@ -331,10 +332,10 @@ void compare_strategies() {
     Result buddy = replay_buddy();
 
     cout << "\nStrategy ExtFrag Utilization SuccessRate\n";
-    cout << "FF    " << ff.ext_frag << " " << ff.util << "% " << ff.success << "%\n";
-    cout << "BF    " << bf.ext_frag << " " << bf.util << "% " << bf.success << "%\n";
-    cout << "WF    " << wf.ext_frag << " " << wf.util << "% " << wf.success << "%\n";
-    cout << "Buddy " << buddy.ext_frag << " " << buddy.util << "% " << buddy.success << "%\n";
+    cout << "FF            " << ff.ext_frag << "     " << ff.util << "%     " << ff.success << "%\n";
+    cout << "BF            " << bf.ext_frag << "     " << bf.util << "%     " << bf.success << "%\n";
+    cout << "WF            " << wf.ext_frag << "     " << wf.util << "%     " << wf.success << "%\n";
+    cout << "Buddy         " << buddy.ext_frag << "     " << buddy.util << "%     " << buddy.success << "%\n";
 }
 int get_block_id(int start_address) {
     for (auto &b : memory_blocks) {

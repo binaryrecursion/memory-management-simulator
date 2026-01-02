@@ -15,6 +15,8 @@ private:
 
     vector<list<int>> free_list;
     unordered_map<int,int> allocated_order;
+    unordered_map<int,int> requested_size;  
+
 
     int size_to_order(int size);
     bool is_power_of_two(int x);
@@ -27,6 +29,10 @@ public:
 
     int get_used_memory() const;
     void dump_free_lists();
+
+    int get_internal_fragmentation() const;
+    void dump_allocations() const;
+
 };
 
 #endif

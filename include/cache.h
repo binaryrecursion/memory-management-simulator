@@ -8,6 +8,11 @@ struct CacheLine {
     bool valid;
     int tag;
 };
+extern int l1_penalty;
+extern int l2_penalty;
+extern int memory_penalty;
+
+extern int total_cycles;
 
 class Cache {
 private:

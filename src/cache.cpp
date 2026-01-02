@@ -2,6 +2,11 @@
 #include <iostream>
 
 using namespace std;
+int l1_penalty   = 1;
+int l2_penalty   = 5;
+int memory_penalty = 50;
+
+int total_cycles = 0;
 
 Cache::Cache(int C, int b, int N)
     : cache_size(C), block_size(b), associativity(N) {
