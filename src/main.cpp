@@ -15,7 +15,6 @@ int PHYSICAL_MEM_SIZE=0;
 int PAGE_SIZE=0;
 int NUM_FRAMES=0;
 
-
 enum AllocatorMode {
     NONE,
     LINEAR,
@@ -24,8 +23,6 @@ enum AllocatorMode {
 
 AllocatorMode alloc_mode = NONE;
 bool compare_mode = false;
-
-
 
 void cache_access(int addr) {
     if (addr < 0) return;
@@ -47,8 +44,6 @@ void cache_access(int addr) {
     total_cycles += l2_penalty + memory_penalty;
     cout << "L1 miss. L2 miss. Accessing main memory.\n";
 }
-
-
 
 void print_help() {
     cout << "\nCOMMANDS\n";
@@ -73,7 +68,6 @@ void print_help() {
     cout << "    stats                                       Show memory, VM, and cache stats\n";
     cout << "    compare                                     Compare allocation strategies\n\n";
 
-
     cout << "Utility\n";
     cout << "    clear_workload                              Clear recorded workload\n";
     cout << "    help                                        Show this help\n";
@@ -84,7 +78,6 @@ void print_help() {
     cout << "---------------------------------------------------------------------\n";
 }
 
-
 int main() {
     string cmd;
 
@@ -93,10 +86,11 @@ int main() {
 
     while (true) {
         cout << ">> ";
-        cin >> cmd;
-
-        
-
+        //cin >> cmd;
+if (!(cin >> cmd))  
+        break;
+       
+ 
         if (compare_mode && cmd != "init" && cmd != "help" && cmd != "exit") {
             cout << "Error: Simulator must be reinitialized after compare.\n";
             continue;
@@ -119,7 +113,7 @@ reset_allocation_stats();
             reset_vm_system(size, page);   // clears page tables, frame bitmap
              buddy_ids.clear();
             workload.clear();
-            compare_mode = false; 
+            compare_mode = false;
             delete buddy;
             delete L1;
             delete L2;
@@ -139,12 +133,11 @@ reset_allocation_stats();
             L1 = new Cache(c1, b1, a1);
             L2 = new Cache(c2, b2, a2);
 
-
             alloc_mode = NONE;
             total_cycles = 0;
             buddy_ids.clear();
             workload.clear();
-            compare_mode = false; 
+            compare_mode = false;
             cout << "System initialized\n";
             cout << "Physical Memory : " << size << " bytes\n";
             cout << "Page Size (for Virtual Memory simulations)  : " << page << " bytes\n";
@@ -165,7 +158,6 @@ reset_allocation_stats();
             init_vm(pid, vsize);
         }
 
-
         else if (cmd == "access") {
             int pid, vaddr;
             cin >> pid >> vaddr;
@@ -177,13 +169,11 @@ reset_allocation_stats();
                 cache_access(paddr);
         }
 
-
         else if (cmd == "vm_table") {
             int pid;
             cin >> pid;
             dump_page_table(pid);
         }
-
 
         else if (cmd == "alloc") {
             string type;
@@ -238,7 +228,6 @@ reset_allocation_stats();
             }
         }
 
-
         else if (cmd == "free") {
             int id;
             cin >> id;
@@ -270,19 +259,18 @@ reset_allocation_stats();
             cout << "Block " << id << " freed\n";
         }
 
-
         else if (cmd == "dump"){
             if (alloc_mode == BUDDY && buddy) {
                 cout << " Buddy allocator in use \n";
                 buddy->dump_allocations();
                 buddy->dump_free_lists();
-            } 
+            }
             else {
                 cout << "Linear allocator in use \n";
                 dump_memory();
             }
         }
-        
+       
        
 
        else if (cmd == "stats") {
@@ -353,7 +341,7 @@ reset_allocation_stats();
                 cout << "No allocator active\n";
             }
 
-            
+           
             cout << "\n----- Virtual Memory -----\n";
 
             int hits = get_page_hits();
@@ -385,15 +373,13 @@ reset_allocation_stats();
                 }
             }
 
-
-
             cout << "\n----- Cache -----\n";
             L1->print_stats("L1");
             L2->print_stats("L2");
             cout << "Total Memory Access Cycles: " << total_cycles << "\n";
             cout << "Disk Penalty per fault: " << disk_penalty << "\n";
         }
-        
+       
         else if (cmd == "compare") {
             compare_strategies();
             compare_mode = true;

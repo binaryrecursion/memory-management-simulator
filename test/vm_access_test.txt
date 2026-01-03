@@ -1,0 +1,27 @@
+init 256 16
+64 16 4
+128 16 4
+vm_init 1 512
+vm_init 2 512
+access 1 0
+access 1 16
+access 1 32
+access 1 48
+access 1 64
+access 1 80
+access 1 96
+access 1 112
+access 1 128
+access 1 144
+access 1 160
+access 1 176
+access 1 192
+access 1 208
+access 1 224
+access 1 240
+access 2 0
+access 1 16
+access 2 16
+vm_table 1
+vm_table 2
+exit

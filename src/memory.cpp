@@ -380,12 +380,13 @@ auto print_row = [&](const string& name, const Result& r) {
     succ << fixed << setprecision(2) << r.success << "%";
 
     cout << left
-         << setw(10) << name
-         << setw(12) << r.int_frag
-         << setw(12) << r.ext_frag
-         << setw(14) << util.str()
-         << setw(14) << succ.str()
-         << "\n";
+     << setw(10) << name
+     << setw(12) << r.int_frag
+     << setw(12) << r.ext_frag
+     << setw(14) << ( (ostringstream() << fixed << setprecision(2) << r.util << "%" ).str() )
+     << setw(14) << ( (ostringstream() << fixed << setprecision(2) << r.success << "%" ).str() )
+     << "\n";
+
 };
 
 

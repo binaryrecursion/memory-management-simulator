@@ -1,0 +1,13 @@
+init 256 16
+64 16 4
+128 16 4
+vm_init 1 512
+access 1 0
+access 1 16
+access 1 32
+access 1 48
+access 1 0
+access 1 64       
+access 1 0         
+stats
+exit
