@@ -87,9 +87,9 @@ int main() {
     while (true) {
         cout << ">> ";
         //cin >> cmd;
-if (!(cin >> cmd))  
+if (!(cin >> cmd))  {
         break;
-       
+}
  
         if (compare_mode && cmd != "init" && cmd != "help" && cmd != "exit") {
             cout << "Error: Simulator must be reinitialized after compare.\n";
@@ -381,6 +381,7 @@ reset_allocation_stats();
         }
        
         else if (cmd == "compare") {
+                cout <<"\n";
             compare_strategies();
             compare_mode = true;
             cout << "\nSimulation state invalidated.\n";

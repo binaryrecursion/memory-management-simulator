@@ -1,0 +1,196 @@
+- Memory Management Simulator - 
+
+Type 'help' to see commands
+>> System memory and page size initialize
+Configure - cache :
+Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
+>>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+>>System initialized
+Physical Memory : 256 bytes
+Page Size (for Virtual Memory simulations)  : 16 bytes
+Total Frames (for Virtual Memory simulations)  : 16
+L1 Size: 64B | Block Size:16B | Assoc: 4-way
+L2 Size: 128B | Block Size:16B | Assoc: 4-way
+>> Allocator mode set to LINEAR
+Allocated block id=1 at address=0x0
+>> Allocated block id=2 at address=0x14
+>> Allocated block id=3 at address=0x23
+>> Allocated block id=4 at address=0x37
+>> Allocated block id=5 at address=0x45
+>> Block 2 freed
+>> Block 4 freed
+>> Allocated block id=6 at address=0x14
+>> Allocated block id=7 at address=0x59
+>> Allocation failed
+>> Linear allocator in use 
+----- Memory Dump -----
+[0x0000 - 0x0013] USED (id=1)
+[0x0014 - 0x0021] USED (id=6)
+[0x0022 - 0x0022] FREE
+[0x0023 - 0x0036] USED (id=3)
+[0x0037 - 0x0044] FREE
+[0x0045 - 0x0058] USED (id=5)
+[0x0059 - 0x00f8] USED (id=7)
+[0x00f9 - 0x00ff] FREE
+-----------------------
+>> =======STATISTICS=======
+
+----- Memory -----
+Allocator Type: Linear (FF/BF/WF)
+Internal Fragmentation: 0 bytes (0% of total memory)
+External Fragmentation: 8 bytes (36.3636% of free memory)
+Memory Utilization: 91.4062%
+Allocation Requests: 8
+Successful Allocations: 7
+Failed Allocations: 1
+Allocation Success Rate: 87.5%
+
+----- Virtual Memory -----
+Total Page Hits: 0
+Total Page Faults: 0
+Fault Rate: 0%
+
+Per-Process Frame Usage:
+No virtual memory initialized for any process.
+
+----- Cache -----
+L1 Accesses: 0
+L1 Hits: 0
+L1 Misses: 0
+L2 Accesses: 0
+L2 Hits: 0
+L2 Misses: 0
+Total Memory Access Cycles: 0
+Disk Penalty per fault: 200
+>> System memory and page size initialize
+Configure - cache :
+Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
+>>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+>>System initialized
+Physical Memory : 256 bytes
+Page Size (for Virtual Memory simulations)  : 16 bytes
+Total Frames (for Virtual Memory simulations)  : 16
+L1 Size: 64B | Block Size:16B | Assoc: 4-way
+L2 Size: 128B | Block Size:16B | Assoc: 4-way
+>> Allocator mode set to LINEAR
+Allocated block id=1 at address=0x0
+>> Allocated block id=2 at address=0x14
+>> Allocated block id=3 at address=0x23
+>> Allocated block id=4 at address=0x37
+>> Allocated block id=5 at address=0x45
+>> Block 2 freed
+>> Block 4 freed
+>> Allocated block id=6 at address=0x59
+>> Allocation failed
+>> Allocated block id=7 at address=0x67
+>> Linear allocator in use 
+----- Memory Dump -----
+[0x0000 - 0x0013] USED (id=1)
+[0x0014 - 0x0022] FREE
+[0x0023 - 0x0036] USED (id=3)
+[0x0037 - 0x0044] FREE
+[0x0045 - 0x0058] USED (id=5)
+[0x0059 - 0x0066] USED (id=6)
+[0x0067 - 0x0075] USED (id=7)
+[0x0076 - 0x00ff] FREE
+-----------------------
+>> =======STATISTICS=======
+
+----- Memory -----
+Allocator Type: Linear (FF/BF/WF)
+Internal Fragmentation: 0 bytes (0% of total memory)
+External Fragmentation: 29 bytes (17.3653% of free memory)
+Memory Utilization: 34.7656%
+Allocation Requests: 8
+Successful Allocations: 7
+Failed Allocations: 1
+Allocation Success Rate: 87.5%
+
+----- Virtual Memory -----
+Total Page Hits: 0
+Total Page Faults: 0
+Fault Rate: 0%
+
+Per-Process Frame Usage:
+No virtual memory initialized for any process.
+
+----- Cache -----
+L1 Accesses: 0
+L1 Hits: 0
+L1 Misses: 0
+L2 Accesses: 0
+L2 Hits: 0
+L2 Misses: 0
+Total Memory Access Cycles: 0
+Disk Penalty per fault: 200
+>> System memory and page size initialize
+Configure - cache :
+Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
+>>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+>>System initialized
+Physical Memory : 256 bytes
+Page Size (for Virtual Memory simulations)  : 16 bytes
+Total Frames (for Virtual Memory simulations)  : 16
+L1 Size: 64B | Block Size:16B | Assoc: 4-way
+L2 Size: 128B | Block Size:16B | Assoc: 4-way
+>> Allocator mode set to LINEAR
+Allocated block id=1 at address=0x0
+>> Allocated block id=2 at address=0x14
+>> Allocated block id=3 at address=0x23
+>> Allocated block id=4 at address=0x37
+>> Allocated block id=5 at address=0x45
+>> Block 2 freed
+>> Block 4 freed
+>> Allocated block id=6 at address=0x37
+>> Allocated block id=7 at address=0x59
+>> Allocated block id=8 at address=0x14
+>> Linear allocator in use 
+----- Memory Dump -----
+[0x0000 - 0x0013] USED (id=1)
+[0x0014 - 0x0022] USED (id=8)
+[0x0023 - 0x0036] USED (id=3)
+[0x0037 - 0x0044] USED (id=6)
+[0x0045 - 0x0058] USED (id=5)
+[0x0059 - 0x00f8] USED (id=7)
+[0x00f9 - 0x00ff] FREE
+-----------------------
+>> =======STATISTICS=======
+
+----- Memory -----
+Allocator Type: Linear (FF/BF/WF)
+Internal Fragmentation: 0 bytes (0% of total memory)
+External Fragmentation: 0 bytes (0% of free memory)
+Memory Utilization: 97.2656%
+Allocation Requests: 8
+Successful Allocations: 8
+Failed Allocations: 0
+Allocation Success Rate: 100%
+
+----- Virtual Memory -----
+Total Page Hits: 0
+Total Page Faults: 0
+Fault Rate: 0%
+
+Per-Process Frame Usage:
+No virtual memory initialized for any process.
+
+----- Cache -----
+L1 Accesses: 0
+L1 Hits: 0
+L1 Misses: 0
+L2 Accesses: 0
+L2 Hits: 0
+L2 Misses: 0
+Total Memory Access Cycles: 0
+Disk Penalty per fault: 200
+>> 
+Strategy  IntFrag     ExtFrag     Utilization   SuccessRate   
+FF        0           8           91.41%        87.50%        
+BF        0           0           97.27%        100.00%       
+WF        0           29          34.77%        87.50%        
+Buddy     221         0           100.00%       25.00%        
+
+Simulation state invalidated.
+Please reinitialize memory using 'init <size>'.
+Note: You may clear the workload using 'workload_clear', to analyze new patterns if required.
+>> 

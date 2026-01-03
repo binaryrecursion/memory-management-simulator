@@ -1,0 +1,60 @@
+- Memory Management Simulator - 
+
+Type 'help' to see commands
+>> System memory and page size initialize
+Configure - cache :
+Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
+>>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+>>System initialized
+Physical Memory : 256 bytes
+Page Size (for Virtual Memory simulations)  : 16 bytes
+Total Frames (for Virtual Memory simulations)  : 16
+L1 Size: 64B | Block Size:16B | Assoc: 4-way
+L2 Size: 128B | Block Size:16B | Assoc: 4-way
+>> Allocator mode set to BUDDY
+Allocated block id=1 at address=0x0
+>> Allocated block id=2 at address=0x80
+>> Block 1 freed
+>> Allocated block id=3 at address=0x0
+>> Allocation failed
+>> Block 2 freed
+>>  Buddy allocator in use 
+---- Buddy Allocations ----
+Addr	Req	Alloc	InternalFrag
+0x0	20	128	108
+---- Buddy Free Lists ----
+Order 7 (size 128): 0x80 
+>> =======STATISTICS=======
+
+----- Memory -----
+Allocator Type: Buddy System
+Total Memory: 256 bytes
+Used Memory: 128 bytes
+Free Memory: 128 bytes
+Internal Fragmentation: 108 bytes (84.375% of allocated memory)
+External Fragmentation: 0 bytes (0%)
+Memory Utilization: 50%
+
+Per Allocation Fragmentation:
+---- Buddy Allocations ----
+Addr	Req	Alloc	InternalFrag
+0x0	20	128	108
+
+----- Virtual Memory -----
+Total Page Hits: 0
+Total Page Faults: 0
+Fault Rate: 0%
+
+Per-Process Frame Usage:
+No virtual memory initialized for any process.
+
+----- Cache -----
+L1 Accesses: 0
+L1 Hits: 0
+L1 Misses: 0
+L2 Accesses: 0
+L2 Hits: 0
+L2 Misses: 0
+Total Memory Access Cycles: 0
+Disk Penalty per fault: 200
+>> 

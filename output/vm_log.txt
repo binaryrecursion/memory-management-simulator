@@ -1,0 +1,161 @@
+- Memory Management Simulator - 
+
+Type 'help' to see commands
+>> System memory and page size initialize
+Configure - cache :
+Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
+>>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+>>System initialized
+Physical Memory : 256 bytes
+Page Size (for Virtual Memory simulations)  : 16 bytes
+Total Frames (for Virtual Memory simulations)  : 16
+L1 Size: 64B | Block Size:16B | Assoc: 4-way
+L2 Size: 128B | Block Size:16B | Assoc: 4-way
+>> Virtual memory initialized for PID 1 of size: 512B
+>> Virtual memory initialized for PID 2 of size: 512B
+>> PAGE FAULT (PID 1, page 0)
+Mapped (PID 1, page 0) -> frame 0
+Physical address = 0
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 1)
+Mapped (PID 1, page 1) -> frame 1
+Physical address = 16
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 2)
+Mapped (PID 1, page 2) -> frame 2
+Physical address = 32
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 3)
+Mapped (PID 1, page 3) -> frame 3
+Physical address = 48
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 4)
+Mapped (PID 1, page 4) -> frame 4
+Physical address = 64
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 5)
+Mapped (PID 1, page 5) -> frame 5
+Physical address = 80
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 6)
+Mapped (PID 1, page 6) -> frame 6
+Physical address = 96
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 7)
+Mapped (PID 1, page 7) -> frame 7
+Physical address = 112
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 8)
+Mapped (PID 1, page 8) -> frame 8
+Physical address = 128
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 9)
+Mapped (PID 1, page 9) -> frame 9
+Physical address = 144
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 10)
+Mapped (PID 1, page 10) -> frame 10
+Physical address = 160
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 11)
+Mapped (PID 1, page 11) -> frame 11
+Physical address = 176
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 12)
+Mapped (PID 1, page 12) -> frame 12
+Physical address = 192
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 13)
+Mapped (PID 1, page 13) -> frame 13
+Physical address = 208
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 14)
+Mapped (PID 1, page 14) -> frame 14
+Physical address = 224
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 1, page 15)
+Mapped (PID 1, page 15) -> frame 15
+Physical address = 240
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 2, page 0)
+PAGE EVICTION: PID 1, frame 0
+Mapped (PID 2, page 0) -> frame 0
+Physical address = 0
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE HIT (PID 1, page 1, frame 1)
+Physical address = 16
+L1 miss. L2 miss. Accessing main memory.
+>> PAGE FAULT (PID 2, page 1)
+PAGE EVICTION: PID 1, frame 2
+Mapped (PID 2, page 1) -> frame 2
+Physical address = 32
+L1 miss. L2 miss. Accessing main memory.
+>> PID 1 Page Table
+Page	Valid	Frame
+0	0	-1
+1	1	1
+2	0	-1
+3	1	3
+4	1	4
+5	1	5
+6	1	6
+7	1	7
+8	1	8
+9	1	9
+10	1	10
+11	1	11
+12	1	12
+13	1	13
+14	1	14
+15	1	15
+16	0	-1
+17	0	-1
+18	0	-1
+19	0	-1
+20	0	-1
+21	0	-1
+22	0	-1
+23	0	-1
+24	0	-1
+25	0	-1
+26	0	-1
+27	0	-1
+28	0	-1
+29	0	-1
+30	0	-1
+31	0	-1
+>> PID 2 Page Table
+Page	Valid	Frame
+0	1	0
+1	1	2
+2	0	-1
+3	0	-1
+4	0	-1
+5	0	-1
+6	0	-1
+7	0	-1
+8	0	-1
+9	0	-1
+10	0	-1
+11	0	-1
+12	0	-1
+13	0	-1
+14	0	-1
+15	0	-1
+16	0	-1
+17	0	-1
+18	0	-1
+19	0	-1
+20	0	-1
+21	0	-1
+22	0	-1
+23	0	-1
+24	0	-1
+25	0	-1
+26	0	-1
+27	0	-1
+28	0	-1
+29	0	-1
+30	0	-1
+31	0	-1
+>> 
