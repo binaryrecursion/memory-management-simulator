@@ -1,11 +1,1 @@
-- Memory Management Simulator - 
 
-Type 'help' to see commands
->> Unknown command
->> Unknown command
->> Unknown command
->> Unknown command
->> Error: Initialize system first using init.
->> Unknown command
->> Unknown command
->> 
