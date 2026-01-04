@@ -50,6 +50,8 @@ Type commands directly in the terminal.
 
 ### Help
 Type help to see all the functions avaiable after running the simulator.
+
+---
 ## Running the tests
 ### Manually
 Linux / Mac
@@ -72,6 +74,7 @@ run_tests.bat
 ```
  this will run all test workloads and save logs into all_tests_output.txt (combined output) and output folder for individual test output like buddy_log.txt.
 
+---
  ## Features Implemented 
 1. **Memory Allocation Strategies**: First Fit, Best Fit, Worst Fit, and Buddy System.
 2. **Virtual Memory**: Per-process Page Tables mapping Virtual Pages to Physical Frames(user configurable)
@@ -84,10 +87,12 @@ run_tests.bat
 7. **Allocator comparision** :Comparison table running on same set of operations comparing fragmentation ,hits , utilization among diffenret allocators.
 8. **Statistics** :Dump and stats functions to tell page hits ,frame used ,L1 ,L2 hits and misses and ,memory utilization ,fragmentation,allocation hits and misses.
 
+---
 ## Demo Video
 
 https://drive.google.com/file/d/1-8gw8rsSgdU9RQH6Ei-CmGaRqYXz4rUu/view?usp=sharing
 
+---
 ## Assumptions & Simplifications
 * Implicit demand paging: unmapped pages trigger a page fault and are automatically mapped (no segmentation faults).
 * Heap & paging are independent: allocators manage heap; paging manages frames/page tables separately.
@@ -96,6 +101,7 @@ https://drive.google.com/file/d/1-8gw8rsSgdU9RQH6Ei-CmGaRqYXz4rUu/view?usp=shari
 * Simplified replacement: LRU for pages, FIFO for cache (no dirty‑bit/disk writes).
 
 
+---
 ## Note
 * output/ is created automatically when tests run
 * Logs are generated rather than stored in Git
