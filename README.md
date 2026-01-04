@@ -92,8 +92,7 @@ https://drive.google.com/file/d/1-8gw8rsSgdU9RQH6Ei-CmGaRqYXz4rUu/view?usp=shari
 * No protection bits: R/W/X permissions are not simulated.
 * Abstracted CPU behavior: we model translation flow, not full instruction execution or traps.
 * Simplified replacement: LRU for pages, FIFO for cache (no dirty‑bit/disk writes).
-* Symbolic timing: cache and memory delays are illustrative, not hardware‑accurate.
-* Omitted hardware features: no TLB, interrupts, concurrency, or real disk I/O.
+
 
 ## Note
 * output/ is created automatically when tests run
