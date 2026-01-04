@@ -86,3 +86,17 @@ run_tests.bat
 
 https://drive.google.com/file/d/1-8gw8rsSgdU9RQH6Ei-CmGaRqYXz4rUu/view?usp=sharing
 
+## Assumptions & Simplifications
+* Implicit demand paging: unmapped pages trigger a page fault and are automatically mapped (no segmentation faults).
+* Heap & paging are independent: allocators manage heap; paging manages frames/page tables separately.
+* No protection bits: R/W/X permissions are not simulated.
+* Abstracted CPU behavior: we model translation flow, not full instruction execution or traps.
+* Simplified replacement: LRU for pages, FIFO for cache (no dirty‑bit/disk writes).
+* Symbolic timing: cache and memory delays are illustrative, not hardware‑accurate.
+* Omitted hardware features: no TLB, interrupts, concurrency, or real disk I/O.
+
+## Note
+* output/ is created automatically when tests run
+* Logs are generated rather than stored in Git
+* All tests are reproducible using the provided scripts
+
