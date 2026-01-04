@@ -48,6 +48,8 @@ memsim.exe
 ```
 Type commands directly in the terminal.
 
+### Help
+Type help to see all the functions avaiable after running the simulator.
 ## Running the tests
 ### Manually
 Linux / Mac
