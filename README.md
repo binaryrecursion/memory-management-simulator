@@ -1,5 +1,5 @@
 # Memory Management Simulator
-This project is a terminal‑based **Memory Management Simulator** that demonstrates how an operating system manages memory at a conceptual level.
+This project is a terminal‑based **Memory Management Simulator** that demonstrates how an operating system manages memory at a conceptual level.More details about this project is in design document.md file present in docs folder in root directory
 
 It simulates:
 
