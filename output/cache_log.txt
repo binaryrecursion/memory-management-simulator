@@ -1,16 +1,14 @@
 - Memory Management Simulator - 
 
 Type 'help' to see commands
->> System memory and page size initialize
+>> Enter physical memory size: Enter page size: System memory and page size initialize
 Configure - cache :
-Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
->>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+Enter L1 cache size, L1_block size, L1 associativity:
+>>Enter L2 cache size, L2_block size, L2 associativity:
 >>System initialized
 Physical Memory : 256 bytes
-Page Size (for Virtual Memory simulations)  : 16 bytes
-Total Frames (for Virtual Memory simulations)  : 16
-L1 Size: 64B | Block Size:16B | Assoc: 4-way
-L2 Size: 128B | Block Size:16B | Assoc: 4-way
+Page Size       : 16 bytes
+Total Frames    : 16
 >> Virtual memory initialized for PID 1 of size: 512B
 >> PAGE FAULT (PID 1, page 0)
 Mapped (PID 1, page 0) -> frame 0

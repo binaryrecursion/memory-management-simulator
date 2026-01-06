@@ -3,18 +3,17 @@
 - Memory Management Simulator - 
 
 Type 'help' to see commands
->> System memory and page size initialize
+>> Enter physical memory size: Enter page size: System memory and page size initialize
 Configure - cache :
-Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
->>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+Enter L1 cache size, L1_block size, L1 associativity:
+>>Enter L2 cache size, L2_block size, L2 associativity:
 >>System initialized
 Physical Memory : 256 bytes
-Page Size (for Virtual Memory simulations)  : 16 bytes
-Total Frames (for Virtual Memory simulations)  : 16
-L1 Size: 64B | Block Size:16B | Assoc: 4-way
-L2 Size: 128B | Block Size:16B | Assoc: 4-way
->> Allocator mode set to BUDDY
-Allocated block id=1 at address=0x0
+Page Size       : 16 bytes
+Total Frames    : 16
+>> Choose allocator mode (buddy / linear): Buddy allocator activated.
+Buddy allocator configured. Use: malloc <size>
+>> Allocated block id=1 at address=0x0
 >> Allocated block id=2 at address=0x80
 >> Block 1 freed
 >> Allocated block id=3 at address=0x0
@@ -63,18 +62,17 @@ Disk Penalty per fault: 200
 - Memory Management Simulator - 
 
 Type 'help' to see commands
->> System memory and page size initialize
+>> Enter physical memory size: Enter page size: System memory and page size initialize
 Configure - cache :
-Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
->>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+Enter L1 cache size, L1_block size, L1 associativity:
+>>Enter L2 cache size, L2_block size, L2 associativity:
 >>System initialized
 Physical Memory : 256 bytes
-Page Size (for Virtual Memory simulations)  : 16 bytes
-Total Frames (for Virtual Memory simulations)  : 16
-L1 Size: 64B | Block Size:16B | Assoc: 4-way
-L2 Size: 128B | Block Size:16B | Assoc: 4-way
->> Allocator mode set to LINEAR
-Allocated block id=1 at address=0x0
+Page Size       : 16 bytes
+Total Frames    : 16
+>> Choose allocator mode (buddy / linear): Linear allocator activated.
+Choose linear strategy (first_fit / best_fit / worst_fit): Strategy selected. Use: malloc <size>
+>> Allocated block id=1 at address=0x0
 >> Allocated block id=2 at address=0x14
 >> Allocated block id=3 at address=0x23
 >> Allocated block id=4 at address=0x37
@@ -124,18 +122,17 @@ L2 Hits: 0
 L2 Misses: 0
 Total Memory Access Cycles: 0
 Disk Penalty per fault: 200
->> System memory and page size initialize
+>> Enter physical memory size: Enter page size: System memory and page size initialize
 Configure - cache :
-Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
->>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+Enter L1 cache size, L1_block size, L1 associativity:
+>>Enter L2 cache size, L2_block size, L2 associativity:
 >>System initialized
 Physical Memory : 256 bytes
-Page Size (for Virtual Memory simulations)  : 16 bytes
-Total Frames (for Virtual Memory simulations)  : 16
-L1 Size: 64B | Block Size:16B | Assoc: 4-way
-L2 Size: 128B | Block Size:16B | Assoc: 4-way
->> Allocator mode set to LINEAR
-Allocated block id=1 at address=0x0
+Page Size       : 16 bytes
+Total Frames    : 16
+>> Choose allocator mode (buddy / linear): Linear allocator activated.
+Choose linear strategy (first_fit / best_fit / worst_fit): Strategy selected. Use: malloc <size>
+>> Allocated block id=1 at address=0x0
 >> Allocated block id=2 at address=0x14
 >> Allocated block id=3 at address=0x23
 >> Allocated block id=4 at address=0x37
@@ -185,18 +182,17 @@ L2 Hits: 0
 L2 Misses: 0
 Total Memory Access Cycles: 0
 Disk Penalty per fault: 200
->> System memory and page size initialize
+>> Enter physical memory size: Enter page size: System memory and page size initialize
 Configure - cache :
-Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
->>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+Enter L1 cache size, L1_block size, L1 associativity:
+>>Enter L2 cache size, L2_block size, L2 associativity:
 >>System initialized
 Physical Memory : 256 bytes
-Page Size (for Virtual Memory simulations)  : 16 bytes
-Total Frames (for Virtual Memory simulations)  : 16
-L1 Size: 64B | Block Size:16B | Assoc: 4-way
-L2 Size: 128B | Block Size:16B | Assoc: 4-way
->> Allocator mode set to LINEAR
-Allocated block id=1 at address=0x0
+Page Size       : 16 bytes
+Total Frames    : 16
+>> Choose allocator mode (buddy / linear): Linear allocator activated.
+Choose linear strategy (first_fit / best_fit / worst_fit): Strategy selected. Use: malloc <size>
+>> Allocated block id=1 at address=0x0
 >> Allocated block id=2 at address=0x14
 >> Allocated block id=3 at address=0x23
 >> Allocated block id=4 at address=0x37
@@ -245,60 +241,47 @@ L2 Hits: 0
 L2 Misses: 0
 Total Memory Access Cycles: 0
 Disk Penalty per fault: 200
->> 
-Strategy  IntFrag     ExtFrag     Utilization   SuccessRate   
+>> Strategy  IntFrag     ExtFrag     Utilization   SuccessRate   
 FF        0           8           91.41%        87.50%        
 BF        0           0           97.27%        100.00%       
 WF        0           29          34.77%        87.50%        
 Buddy     221         0           100.00%       25.00%        
-
-Simulation state invalidated.
-Please reinitialize memory using 'init <size>'.
-Note: You may clear the workload using 'workload_clear', to analyze new patterns if required.
 >> ===== COMPARE ALLOCATION TEST ===== 
 - Memory Management Simulator - 
 
 Type 'help' to see commands
->> System memory and page size initialize
+>> Enter physical memory size: Enter page size: System memory and page size initialize
 Configure - cache :
-Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
->>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+Enter L1 cache size, L1_block size, L1 associativity:
+>>Enter L2 cache size, L2_block size, L2 associativity:
 >>System initialized
 Physical Memory : 256 bytes
-Page Size (for Virtual Memory simulations)  : 16 bytes
-Total Frames (for Virtual Memory simulations)  : 16
-L1 Size: 64B | Block Size:16B | Assoc: 4-way
-L2 Size: 128B | Block Size:16B | Assoc: 4-way
->> Allocator mode set to LINEAR
-Allocated block id=1 at address=0x0
+Page Size       : 16 bytes
+Total Frames    : 16
+>> Choose allocator mode (buddy / linear): Linear allocator activated.
+Choose linear strategy (first_fit / best_fit / worst_fit): Strategy selected. Use: malloc <size>
+>> Allocated block id=1 at address=0x0
 >> Allocated block id=2 at address=0x14
 >> Block 1 freed
 >> Allocated block id=3 at address=0x0
 >> Allocated block id=4 at address=0x28
->> 
-Strategy  IntFrag     ExtFrag     Utilization   SuccessRate   
+>> Strategy  IntFrag     ExtFrag     Utilization   SuccessRate   
 FF        0           0           97.66%        100.00%       
 BF        0           0           97.66%        100.00%       
 WF        0           20          15.62%        75.00%        
 Buddy     216         0           100.00%       75.00%        
-
-Simulation state invalidated.
-Please reinitialize memory using 'init <size>'.
-Note: You may clear the workload using 'workload_clear', to analyze new patterns if required.
 >> ===== CACHE ACCESS TEST ===== 
 - Memory Management Simulator - 
 
 Type 'help' to see commands
->> System memory and page size initialize
+>> Enter physical memory size: Enter page size: System memory and page size initialize
 Configure - cache :
-Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
->>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+Enter L1 cache size, L1_block size, L1 associativity:
+>>Enter L2 cache size, L2_block size, L2 associativity:
 >>System initialized
 Physical Memory : 256 bytes
-Page Size (for Virtual Memory simulations)  : 16 bytes
-Total Frames (for Virtual Memory simulations)  : 16
-L1 Size: 64B | Block Size:16B | Assoc: 4-way
-L2 Size: 128B | Block Size:16B | Assoc: 4-way
+Page Size       : 16 bytes
+Total Frames    : 16
 >> Virtual memory initialized for PID 1 of size: 512B
 >> PAGE FAULT (PID 1, page 0)
 Mapped (PID 1, page 0) -> frame 0
@@ -354,16 +337,14 @@ Disk Penalty per fault: 200
 - Memory Management Simulator - 
 
 Type 'help' to see commands
->> System memory and page size initialize
+>> Enter physical memory size: Enter page size: System memory and page size initialize
 Configure - cache :
-Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
->>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+Enter L1 cache size, L1_block size, L1 associativity:
+>>Enter L2 cache size, L2_block size, L2 associativity:
 >>System initialized
 Physical Memory : 256 bytes
-Page Size (for Virtual Memory simulations)  : 16 bytes
-Total Frames (for Virtual Memory simulations)  : 16
-L1 Size: 64B | Block Size:16B | Assoc: 4-way
-L2 Size: 128B | Block Size:16B | Assoc: 4-way
+Page Size       : 16 bytes
+Total Frames    : 16
 >> Virtual memory initialized for PID 1 of size: 512B
 >> Virtual memory initialized for PID 2 of size: 512B
 >> PAGE FAULT (PID 1, page 0)

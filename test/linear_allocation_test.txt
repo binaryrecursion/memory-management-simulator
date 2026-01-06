@@ -1,46 +1,61 @@
-init 256 16
+init 
+256 
+16
 64 16 4
 128 16 4
-alloc ff 20
-alloc ff 15
-alloc ff 20
-alloc ff 14 
-alloc ff 20
+alloc
+linear
+first_fit
+malloc 20
+malloc 15
+malloc 20
+malloc 14
+malloc 20
 free 2
 free 4
-alloc ff 14
-alloc ff 160
-alloc ff 15
+malloc 14
+malloc 160
+malloc 15
 dump
 stats
-init 256 16
+init 
+256 
+16
 64 16 4
 128 16 4
-alloc wf 20
-alloc wf 15
-alloc wf 20
-alloc wf 14 
-alloc wf 20
+alloc
+linear
+worst_fit
+malloc 20
+malloc 15
+malloc 20
+malloc 14
+malloc 20
 free 2
 free 4
-alloc wf 14
-alloc wf 160
-alloc wf 15
+malloc 14
+malloc 160
+malloc 15
 dump
 stats
-init 256 16
+init 
+256 
+16
 64 16 4
 128 16 4
-alloc bf 20
-alloc bf 15
-alloc bf 20
-alloc bf 14 
-alloc bf 20
+alloc
+linear
+best_fit
+malloc 20
+malloc 15
+malloc 20
+malloc 14
+malloc 20
 free 2
 free 4
-alloc bf 14
-alloc bf 160
-alloc bf 15
+malloc 14
+malloc 160
+malloc 15
 dump
 stats
 compare

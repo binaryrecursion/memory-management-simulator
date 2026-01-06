@@ -11,18 +11,19 @@ using namespace std;
 BuddyAllocator* buddy = nullptr;
 Cache* L1 = nullptr;
 Cache* L2 = nullptr;
-int PHYSICAL_MEM_SIZE=0;
-int PAGE_SIZE=0;
-int NUM_FRAMES=0;
 
-enum AllocatorMode {
-    NONE,
-    LINEAR,
-    BUDDY
-};
+int PHYSICAL_MEM_SIZE = 0;
+int PAGE_SIZE = 0;
+int NUM_FRAMES = 0;
+
+enum AllocatorMode { NONE, LINEAR, BUDDY };
+enum LinearStrategy { LNONE, FIRST, BEST, WORST };
 
 AllocatorMode alloc_mode = NONE;
+LinearStrategy lin_strategy = LNONE;
+
 bool compare_mode = false;
+bool system_initialized = false;
 
 void cache_access(int addr) {
     if (addr < 0) return;
@@ -48,34 +49,19 @@ void cache_access(int addr) {
 void print_help() {
     cout << "\nCOMMANDS\n";
     cout << "----------------------------------------------------------------------\n";
-    cout << "Memory Initialization\n";
-    cout << "    init <bytes> <page_size>                    Initialize physical memory for allocation and\n";
-    cout << "                                                page size for virtual memory simulations.\n\n";
-    cout << "Dynamic Allocation - choose b/w [ff/bf/wf] or [buddy] per init\n";
-    cout << "    alloc ff <bytes>                            First Fit allocation\n";
-    cout << "    alloc bf <bytes>                            Best Fit allocation\n";
-    cout << "    alloc wf <bytes>                            Worst Fit allocation\n";
-    cout << "    alloc buddy <bytes>                         Buddy system allocation\n";
-    cout << "    free <block_id>                             Free allocated block\n\n";
-
-    cout << "Virtual Memory (Paging)\n";
-    cout << "    vm_init <pid> <vsize>                       Initialize paging for a process\n";
-    cout << "    access <pid> <vaddr>                        Translate virtual address and access memory\n";
-    cout << "    vm_table <pid>                              Dump page table for process\n\n";
-
-    cout << "Inspection & Statistics\n";
-    cout << "    dump                                        Dump heap memory layout\n";
-    cout << "    stats                                       Show memory, VM, and cache stats\n";
-    cout << "    compare                                     Compare allocation strategies\n\n";
-
-    cout << "Utility\n";
-    cout << "    clear_workload                              Clear recorded workload\n";
-    cout << "    help                                        Show this help\n";
-    cout << "    exit                                        Quit simulator\n\n";
-    cout << "\nNote: Heap allocation and virtual memory are simulated independently.\n";
-    cout << "VM accesses do not validate heap allocation state.\n";
-
-    cout << "---------------------------------------------------------------------\n";
+    cout << "init                                        Initialize system\n";
+    cout << "alloc                                       Configure allocator\n";
+    cout << "malloc <size>                               Allocate memory\n";
+    cout << "free <block_id>                             Free block\n";
+    cout << "vm_init <pid> <vsize>                       Init paging\n";
+    cout << "access <pid> <vaddr>                        Access virtual address\n";
+    cout << "vm_table <pid>                              Print page table\n";
+    cout << "dump                                        Dump heap\n";
+    cout << "stats                                       Show statistics\n";
+    cout << "compare                                     Compare strategies\n";
+    cout << "clear_workload                              Clear workload\n";
+    cout << "help                                        Show help\n";
+    cout << "exit                                        Quit\n";
 }
 
 int main() {
@@ -86,34 +72,49 @@ int main() {
 
     while (true) {
         cout << ">> ";
-        //cin >> cmd;
-if (!(cin >> cmd))  {
-        break;
-}
- 
-        if (compare_mode && cmd != "init" && cmd != "help" && cmd != "exit") {
+        if (!(cin >> cmd)) break;
+
+        // Must init first
+        if (!system_initialized &&
+            cmd != "init" && cmd != "help" && cmd != "exit") {
+            cout << "System not initialized. Run: init <bytes> <page_size>\n";
+            continue;
+        }
+
+        if (compare_mode &&
+            cmd != "init" && cmd != "help" && cmd != "exit") {
             cout << "Error: Simulator must be reinitialized after compare.\n";
             continue;
         }
 
+        // ---------------- INIT ----------------
         if (cmd == "init") {
+
             int size, page;
-            cin >> size >> page;
+
+            cout << "Enter physical memory size: ";
+            cin >> size;
+
+            cout << "Enter page size: ";
+            cin >> page;
 
             if (size % page != 0) {
                 cout << "Error: Physical memory must be divisible by page size.\n";
                 continue;
             }
 
+            system_initialized = true;
+
             PHYSICAL_MEM_SIZE = size;
             PAGE_SIZE = page;
             NUM_FRAMES = size / page;
-reset_allocation_stats();
+
+            reset_allocation_stats();
             init_memory(size);
-            reset_vm_system(size, page);   // clears page tables, frame bitmap
-             buddy_ids.clear();
+            reset_vm_system(size, page);
+            buddy_ids.clear();
             workload.clear();
-            compare_mode = false;
+
             delete buddy;
             delete L1;
             delete L2;
@@ -124,40 +125,37 @@ reset_allocation_stats();
 
             cout << "System memory and page size initialize\n";
             cout << "Configure - cache :\n";
+
             int c1, b1, a1, c2, b2, a2;
-            cout << "Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]\n>>";
+
+            cout << "Enter L1 cache size, L1_block size, L1 associativity:\n>>";
             cin >> c1 >> b1 >> a1;
-            cout << "Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]\n>>";
+
+            cout << "Enter L2 cache size, L2_block size, L2 associativity:\n>>";
             cin >> c2 >> b2 >> a2;
 
             L1 = new Cache(c1, b1, a1);
             L2 = new Cache(c2, b2, a2);
 
             alloc_mode = NONE;
+            lin_strategy = LNONE;
             total_cycles = 0;
-            buddy_ids.clear();
-            workload.clear();
             compare_mode = false;
+
             cout << "System initialized\n";
             cout << "Physical Memory : " << size << " bytes\n";
-            cout << "Page Size (for Virtual Memory simulations)  : " << page << " bytes\n";
-            cout << "Total Frames (for Virtual Memory simulations)  : " << NUM_FRAMES << "\n";
-            cout << "L1 Size: "<< c1 << "B | Block Size:"<<b1<< "B | Assoc: " << a1 << "-way\n";
-            cout << "L2 Size: "<< c2 << "B | Block Size:"<<b2<< "B | Assoc: " << a2 << "-way\n";
+            cout << "Page Size       : " << page << " bytes\n";
+            cout << "Total Frames    : " << NUM_FRAMES << "\n";
         }
 
+        // ---------------- VM INIT ----------------
         else if (cmd == "vm_init") {
-            if (PAGE_SIZE == 0 || PHYSICAL_MEM_SIZE==0) {
-                cout << "Error: Initialize system first using init.\n";
-                continue;
-            }
             int pid, vsize;
-
             cin >> pid >> vsize;
-
             init_vm(pid, vsize);
         }
 
+        // ---------------- ACCESS ----------------
         else if (cmd == "access") {
             int pid, vaddr;
             cin >> pid >> vaddr;
@@ -169,80 +167,115 @@ reset_allocation_stats();
                 cache_access(paddr);
         }
 
+        // ---------------- PAGE TABLE ----------------
         else if (cmd == "vm_table") {
             int pid;
             cin >> pid;
             dump_page_table(pid);
         }
 
+        // ---------------- ALLOC (configure allocator) ----------------
         else if (cmd == "alloc") {
-            string type;
+
+            if (alloc_mode == NONE) {
+                cout << "Choose allocator mode (buddy / linear): ";
+                string t; cin >> t;
+
+                if (t == "buddy") {
+                    alloc_mode = BUDDY;
+                    cout << "Buddy allocator activated.\n";
+                }
+                else if (t == "linear") {
+                    alloc_mode = LINEAR;
+                    cout << "Linear allocator activated.\n";
+                }
+                else {
+                    cout << "Invalid allocator type.\n";
+                    continue;
+                }
+            }
+
+            if (alloc_mode == BUDDY) {
+                cout << "Buddy allocator configured. Use: malloc <size>\n";
+            }
+
+            else if (alloc_mode == LINEAR) {
+
+                if (lin_strategy != LNONE) {
+                    cout << "Linear allocator already configured. Use: malloc <size>\n";
+                }
+                else {
+                    string strat;
+                    cout << "Choose linear strategy (first_fit / best_fit / worst_fit): ";
+                    cin >> strat;
+
+                    if (strat == "first_fit")      lin_strategy = FIRST;
+                    else if (strat == "best_fit")  lin_strategy = BEST;
+                    else if (strat == "worst_fit") lin_strategy = WORST;
+                    else {
+                        cout << "Invalid linear strategy.\n";
+                        continue;
+                    }
+
+                    cout << "Strategy selected. Use: malloc <size>\n";
+                }
+            }
+        }
+
+        // ---------------- MALLOC ----------------
+        else if (cmd == "malloc") {
+
             int size;
-            cin >> type >> size;
+            cin >> size;
+
+            if (alloc_mode == NONE) {
+                cout << "Allocator not configured. Use 'alloc' first.\n";
+                continue;
+            }
 
             int addr = -1;
 
-            if (alloc_mode == NONE) {
-                alloc_mode = (type == "buddy") ? BUDDY : LINEAR;
-                cout << "Allocator mode set to "
-                     << (alloc_mode == BUDDY ? "BUDDY\n" : "LINEAR\n");
+            if (alloc_mode == BUDDY) {
+                addr = buddy->buddy_malloc(size);
             }
+            else {
 
-            if (alloc_mode == LINEAR && type == "buddy") {
-                cout << "Cannot use buddy allocator.\n";
-                cout << "Memory is in LINEAR mode. Reinitialize to switch.\n";
-                continue;
-            }
-
-            if (alloc_mode == BUDDY && type != "buddy") {
-                cout << "Cannot use linear allocator.\n";
-                cout << "Memory is in BUDDY mode. Reinitialize to switch.\n";
-                continue;
-            }
-
-            if (alloc_mode == LINEAR) {
-                if (type == "ff") addr = malloc_first_fit(size);
-                else if (type == "bf") addr = malloc_best_fit(size);
-                else if (type == "wf") addr = malloc_worst_fit(size);
+                if (lin_strategy == FIRST)
+                    addr = malloc_first_fit(size);
+                else if (lin_strategy == BEST)
+                    addr = malloc_best_fit(size);
+                else if (lin_strategy == WORST)
+                    addr = malloc_worst_fit(size);
                 else {
-                    cout << "Unknown allocator\n";
+                    cout << "No strategy selected. Run 'alloc' first.\n";
                     continue;
                 }
-            } else {
-                addr = buddy->buddy_malloc(size);
             }
 
             workload.push_back({ALLOC_EVENT, size});
 
-            if (addr == -1) {
+            if (addr == -1)
                 cout << "Allocation failed\n";
-            } else {
-                int id = get_block_id(addr);
-                if (alloc_mode == BUDDY)
-                    id = buddy_ids[addr];
+            else {
+                int id = (alloc_mode == BUDDY)
+                        ? buddy_ids[addr]
+                        : get_block_id(addr);
 
                 cout << "Allocated block id=" << id
-                     << " at address=0x"
-                     << hex << addr << dec << "\n";
-
+                     << " at address=0x" << hex << addr << dec << "\n";
             }
         }
 
+        // ---------------- FREE ----------------
         else if (cmd == "free") {
             int id;
             cin >> id;
 
-            int addr = -1;
-
-            addr = get_block_start_by_id(id);
+            int addr = get_block_start_by_id(id);
 
             if (addr == -1) {
-                for (auto &p : buddy_ids) {
-                    if (p.second == id) {
-                        addr = p.first;
-                        break;
-                    }
-                }
+                for (auto &p : buddy_ids)
+                    if (p.second == id) addr = p.first;
             }
 
             if (addr == -1) {
@@ -259,28 +292,30 @@ reset_allocation_stats();
             cout << "Block " << id << " freed\n";
         }
 
-        else if (cmd == "dump"){
-            if (alloc_mode == BUDDY && buddy) {
-                cout << " Buddy allocator in use \n";
-                buddy->dump_allocations();
-                buddy->dump_free_lists();
-            }
-            else {
-                cout << "Linear allocator in use \n";
-                dump_memory();
-            }
-        }
-       
-       
+        // ---------------- DUMP ----------------
+       else if (cmd == "dump") {
+    if (alloc_mode == BUDDY && buddy) {
+        cout << " Buddy allocator in use \n";
+        buddy->dump_allocations();
+        buddy->dump_free_lists();
+    }
+    else {
+        cout << "Linear allocator in use \n";
+        dump_memory();
+    }
+}
 
-       else if (cmd == "stats") {
+
+        // ---------------- STATS (restored original) ----------------
+        else if (cmd == "stats") {
             cout << "=======STATISTICS=======\n";
+
             cout << "\n----- Memory -----\n";
 
             if (alloc_mode == LINEAR) {
                 cout << "Allocator Type: Linear (FF/BF/WF)\n";
 
-                int internal = internal_fragmentation();   // currently 0
+                int internal = internal_fragmentation();
                 int external = external_fragmentation();
 
                 int total = total_memory_size;
@@ -293,15 +328,15 @@ reset_allocation_stats();
                 double external_pct = free_mem ? (external * 100.0 / free_mem) : 0.0;
 
                 cout << "Internal Fragmentation: "
-                    << internal << " bytes ("
-                    << internal_pct << "% of total memory)\n";
+                     << internal << " bytes ("
+                     << internal_pct << "% of total memory)\n";
 
                 cout << "External Fragmentation: "
-                    << external << " bytes ("
-                    << external_pct << "% of free memory)\n";
+                     << external << " bytes ("
+                     << external_pct << "% of free memory)\n";
 
                 cout << "Memory Utilization: "
-                    << memory_utilization() << "%\n";
+                     << memory_utilization() << "%\n";
 
                 allocation_stats();
             }
@@ -326,8 +361,7 @@ reset_allocation_stats();
                     << internal << " bytes ("
                     << internal_pct << "% of allocated memory)\n";
 
-                cout << "External Fragmentation: "
-                    << "0 bytes (0%)\n";
+                cout << "External Fragmentation: 0 bytes (0%)\n";
 
                 cout << "Memory Utilization: "
                     << (total ? (used * 100.0 / total) : 0.0)
@@ -341,7 +375,6 @@ reset_allocation_stats();
                 cout << "No allocator active\n";
             }
 
-           
             cout << "\n----- Virtual Memory -----\n";
 
             int hits = get_page_hits();
@@ -368,8 +401,8 @@ reset_allocation_stats();
                         cout << "PID " << pid << ": NIL\n";
                     else
                         cout << "PID " << pid << ": "
-                            << used << "/" << get_total_frames()
-                            << " frames used\n";
+                             << used << "/" << get_total_frames()
+                             << " frames used\n";
                 }
             }
 
@@ -379,14 +412,11 @@ reset_allocation_stats();
             cout << "Total Memory Access Cycles: " << total_cycles << "\n";
             cout << "Disk Penalty per fault: " << disk_penalty << "\n";
         }
-       
+
+        // ---------------- COMPARE ----------------
         else if (cmd == "compare") {
-                cout <<"\n";
             compare_strategies();
             compare_mode = true;
-            cout << "\nSimulation state invalidated.\n";
-            cout << "Please reinitialize memory using 'init <size>'.\n";
-            cout << "Note: You may clear the workload using 'workload_clear', to analyze new patterns if required.\n";
         }
 
         else if (cmd == "clear_workload") {
@@ -394,13 +424,9 @@ reset_allocation_stats();
             cout << "Workload cleared\n";
         }
 
-        else if (cmd == "exit") {
-            break;
-        }
         else if (cmd == "help") print_help();
-        else {
-            cout << "Unknown command\n";
-        }
+        else if (cmd == "exit") break;
+        else cout << "Unknown command\n";
     }
 
     return 0;

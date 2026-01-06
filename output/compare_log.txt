@@ -1,30 +1,24 @@
 - Memory Management Simulator - 
 
 Type 'help' to see commands
->> System memory and page size initialize
+>> Enter physical memory size: Enter page size: System memory and page size initialize
 Configure - cache :
-Enter L1 cache size, L1_block size, L1 associativity: [ <L1_size> <L1_block> <L1_assoc> ]
->>Enter L2 cache size, L2_block size, L2 associativity: [ <L2_size> <L2_block> <L2_assoc> ]
+Enter L1 cache size, L1_block size, L1 associativity:
+>>Enter L2 cache size, L2_block size, L2 associativity:
 >>System initialized
 Physical Memory : 256 bytes
-Page Size (for Virtual Memory simulations)  : 16 bytes
-Total Frames (for Virtual Memory simulations)  : 16
-L1 Size: 64B | Block Size:16B | Assoc: 4-way
-L2 Size: 128B | Block Size:16B | Assoc: 4-way
->> Allocator mode set to LINEAR
-Allocated block id=1 at address=0x0
+Page Size       : 16 bytes
+Total Frames    : 16
+>> Choose allocator mode (buddy / linear): Linear allocator activated.
+Choose linear strategy (first_fit / best_fit / worst_fit): Strategy selected. Use: malloc <size>
+>> Allocated block id=1 at address=0x0
 >> Allocated block id=2 at address=0x14
 >> Block 1 freed
 >> Allocated block id=3 at address=0x0
 >> Allocated block id=4 at address=0x28
->> 
-Strategy  IntFrag     ExtFrag     Utilization   SuccessRate   
+>> Strategy  IntFrag     ExtFrag     Utilization   SuccessRate   
 FF        0           0           97.66%        100.00%       
 BF        0           0           97.66%        100.00%       
 WF        0           20          15.62%        75.00%        
 Buddy     216         0           100.00%       75.00%        
-
-Simulation state invalidated.
-Please reinitialize memory using 'init <size>'.
-Note: You may clear the workload using 'workload_clear', to analyze new patterns if required.
 >> 
