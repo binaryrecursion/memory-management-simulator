@@ -80,7 +80,19 @@ We track:
 - symbolic cycle cost (illustrative, not hardware‑accurate)
 
 Spatial locality appears naturally because entire blocks are fetched per access.
+<table>
+<tr>
+  <td>
+    <img src="images/cache.png" width="95%"><br>
+    
+  </td>
 
+  <td>
+    <img src="images/cache1.png" width="95%"><br>
+   
+  </td>
+</tr>
+</table>
 ---
 
 ## 5. Virtual Memory Model
@@ -95,7 +107,19 @@ Paging maps virtual pages to physical frames.
 
 Page replacement uses **LRU**.  
 We track page hits, faults, and per‑process frame usage.
+<table>
+<tr>
+  <td>
+    <img src="images/vm.png" width="95%"><br>
+    
+  </td>
 
+  <td>
+    <img src="images/vm1.png" width="95%"><br>
+    
+  </td>
+</tr>
+</table>
 ---
 
 ## 6. Address Translation Flow
@@ -145,7 +169,7 @@ We track page hits, faults, and per‑process frame usage.
 ## 7. Compare Mode (Allocation Strategy Comparison)
 
 The simulator can replay the same workload under multiple strategies  
-(**FF, BF, WF, Buddy**) and report statistics side‑by‑side:
+(**FF, BF, WF, Buddy**) and report statistics 
 
 - allocation successes / failures  
 - memory utilization  
@@ -161,13 +185,14 @@ This mode does not change allocator behavior — it only **evaluates** it.
 ---
 
 
-## 8. Limitations & Simplifications (why we chose them)
+## 8. Limitations & Simplifications
 
-- **Implicit demand paging** — focus on paging instead of crash behavior  
-- **Heap & paging independent** — simpler, easier to reason about  
-- **LRU (pages) / FIFO (cache)** — clear and explainable policies  
-- **Symbolic timing** — shows trends without hardware modeling  
-- **No TLB, interrupts, permissions, or real disk I/O** — reduced complexity  
+* Implicit demand paging: unmapped pages trigger a page fault and are automatically mapped (no segmentation faults).
+* Heap & paging are independent: allocators manage heap; paging manages frames/page tables separately.
+* No protection bits: R/W/X permissions are not simulated.
+* Abstracted CPU behavior: we model translation flow, not full instruction execution or traps.
+* Simplified replacement: LRU for pages, FIFO for cache (no dirty‑bit/disk writes).
+
 ---
 
 ## 9. Testing & Validation
@@ -189,6 +214,7 @@ Screenshots and the demo video and output files  explained the correctness of te
 
 ## 10. Conclusion
 I implemented the memory management simulator including buddy systems ,linear allocation,cache ,virtual memory . I added the test cases and their results i verified all of them were correct showing correct implementation .
+
 
 
 
