@@ -146,7 +146,7 @@ We track page hits, faults, and per‑process frame usage.
         |      │  replace)    │
         |      └───────┬──────┘
         |              ↓
-        └────────► Physical Frame ◄────────┘
+        └────────► Physical Frame
                       ↓
               ┌───────────────┐
               │ Cache Lookup  │
@@ -215,6 +215,7 @@ Screenshots and the demo video and output files  explained the correctness of te
 
 ## 10. Conclusion
 I implemented the memory management simulator including buddy systems ,linear allocation,cache ,virtual memory . I added the test cases and their results i verified all of them were correct showing correct implementation .
+
 
 
 
