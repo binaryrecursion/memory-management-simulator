@@ -38,6 +38,10 @@ make
 ```
 If make doesnt work ,Run
 ```bash
+mingw32-make
+```
+If even this doesnt work then ,Run
+```bash
 g++ -std=c++17 -O2 -Wall src/main.cpp src/memory.cpp src/buddy.cpp src/cache.cpp src/vm.cpp -Iinclude -o memsim
 ```
 ### Run the simulator
