@@ -17,7 +17,7 @@ Virtual Addr → Page Table → Physical Addr → Cache → Main Memor
 
 ## 2. Allocation Strategies (First_fit, Best_Fit, Worst_Fit)
 
-A free‑list tracks blocks inside a simulated heap.Free contiguous memmory are grouped together as required.
+A free‑list tracks blocks inside a simulated heap.Free contiguous memmory are grouped together as required.If no block present of >= required size allocation is failed
 
 | Strategy   | Description                         | 
 |------------|-------------------------------------|
@@ -42,7 +42,8 @@ Fragmentation and utilization statistics are present in comparision table.
 
 
 ## 3. Buddy System Design
-Memory is divided into **power‑of‑two** sized blocks.Free contiguous memmory are grouped together as required.
+Memory is divided into **power‑of‑two** sized blocks.Free contiguous memmory are grouped together as required.If no block present of >= required size allocation is failed
+
 
 **Algorithm**
 
@@ -214,6 +215,7 @@ Screenshots and the demo video and output files  explained the correctness of te
 
 ## 10. Conclusion
 I implemented the memory management simulator including buddy systems ,linear allocation,cache ,virtual memory . I added the test cases and their results i verified all of them were correct showing correct implementation .
+
 
 
 
