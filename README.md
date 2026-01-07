@@ -17,7 +17,7 @@ It simulates:
 * `include/` :    header files (.h)
 * `test/` :     input workloads
 * `output/` :   generated logs (created when tests run)
-* `docs/` :   design document
+* `docs/` :   design document + images
 * `run_tests.sh` :      Linux/Mac automated test runner
 * `run_tests.bat` :      Windows automated test runner
 * `Makefile`
