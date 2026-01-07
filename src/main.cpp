@@ -74,7 +74,7 @@ int main() {
         cout << ">> ";
         if (!(cin >> cmd)) break;
 
-        // Must init first
+    
         if (!system_initialized &&
             cmd != "init" && cmd != "help" && cmd != "exit") {
             cout << "System not initialized. Run: init <bytes> <page_size>\n";
@@ -87,7 +87,6 @@ int main() {
             continue;
         }
 
-        // ---------------- INIT ----------------
         if (cmd == "init") {
 
             int size, page;
@@ -148,14 +147,13 @@ int main() {
             cout << "Total Frames    : " << NUM_FRAMES << "\n";
         }
 
-        // ---------------- VM INIT ----------------
         else if (cmd == "vm_init") {
             int pid, vsize;
             cin >> pid >> vsize;
             init_vm(pid, vsize);
         }
 
-        // ---------------- ACCESS ----------------
+        
         else if (cmd == "access") {
             int pid, vaddr;
             cin >> pid >> vaddr;
@@ -167,14 +165,12 @@ int main() {
                 cache_access(paddr);
         }
 
-        // ---------------- PAGE TABLE ----------------
         else if (cmd == "vm_table") {
             int pid;
             cin >> pid;
             dump_page_table(pid);
         }
 
-        // ---------------- ALLOC (configure allocator) ----------------
         else if (cmd == "alloc") {
 
             if (alloc_mode == NONE) {
@@ -222,7 +218,6 @@ int main() {
             }
         }
 
-        // ---------------- MALLOC ----------------
         else if (cmd == "malloc") {
 
             int size;
@@ -266,7 +261,6 @@ int main() {
             }
         }
 
-        // ---------------- FREE ----------------
         else if (cmd == "free") {
             int id;
             cin >> id;
@@ -291,8 +285,6 @@ int main() {
             workload.push_back({FREE_EVENT, addr});
             cout << "Block " << id << " freed\n";
         }
-
-        // ---------------- DUMP ----------------
        else if (cmd == "dump") {
     if (alloc_mode == BUDDY && buddy) {
         cout << " Buddy allocator in use \n";
@@ -305,8 +297,6 @@ int main() {
     }
 }
 
-
-        // ---------------- STATS (restored original) ----------------
         else if (cmd == "stats") {
             cout << "=======STATISTICS=======\n";
 
@@ -413,7 +403,6 @@ int main() {
             cout << "Disk Penalty per fault: " << disk_penalty << "\n";
         }
 
-        // ---------------- COMPARE ----------------
         else if (cmd == "compare") {
             compare_strategies();
             compare_mode = true;

@@ -309,7 +309,7 @@ static Result replay(const string &type) {
 static Result replay_buddy() {
     BuddyAllocator buddy_test(total_memory_size, 128);
 
-    unordered_map<int, int> alloc_req; // addr -> requested size
+    unordered_map<int, int> alloc_req; 
     int total_allocs = 0;
     int successful = 0;
     int internal_frag = 0;
@@ -327,7 +327,7 @@ static Result replay_buddy() {
 
                 internal_frag += (alloc_size - e.value);
             }
-        } else { // FREE_EVENT
+        } else { 
             int addr = e.value;
 
             if (alloc_req.count(addr)) {
@@ -362,7 +362,7 @@ void compare_strategies() {
     Result bf = replay("bf");
     Result wf = replay("wf");
     Result buddy = replay_buddy();
-cout << setfill(' ');      // reset padding to spaces
+cout << setfill(' ');     
 cout << fixed << setprecision(2);
 
 
