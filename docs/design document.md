@@ -26,7 +26,19 @@ A free‑list tracks blocks inside a simulated heap.Free contiguous memmory are 
 | Worst Fit  | largest available block            |
 
 Fragmentation and utilization statistics are present in comparision table.
+<table>
+<tr>
+  <td>
+    <img src="images/linear alloc.png" width="95%"><br>
+    
+  </td>
 
+  <td>
+    <img src="images/linear alloc1.png" width="95%"><br>
+    <img src="images/linear alloc2.png" width="95%">
+  </td>
+</tr>
+</table>
 
 
 ## 3. Buddy System Design
@@ -151,6 +163,7 @@ The simulator can replay the same workload under multiple strategies
 
 This mode does not change allocator behavior — it only **evaluates** it.
 
+
 ---
 
 
@@ -184,5 +197,6 @@ Screenshots and the demo video illustrate expected behavior.
 The simulator integrates allocation, paging, and caching into one framework,
 highlighting performance and fragmentation trade‑offs while staying
 transparent and educational.
+
 
 
