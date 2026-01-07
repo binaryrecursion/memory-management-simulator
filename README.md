@@ -1,5 +1,5 @@
 # Memory Management Simulator
-This project is a terminal‑based **Memory Management Simulator** that demonstrates how an operating system manages memory at a conceptual level.More details about this project is in design document.md file present in docs folder in root directory
+This project is a terminal‑based **Memory Management Simulator** that demonstrates how an operating system manages memory at a conceptual level.More details about this project is in design document.md file present in docs folder in root directory.Test cases are present in test folder.
 
 It simulates:
 
@@ -35,6 +35,10 @@ It simulates:
 Run the following command in the root directory:
 ```bash
 make
+```
+If make doesnt work ,Run
+```bash
+g++ -std=c++17 -O2 -Wall src/main.cpp src/memory.cpp src/buddy.cpp src/cache.cpp src/vm.cpp -Iinclude -o memsim
 ```
 ### Run the simulator
 Linux / Mac
