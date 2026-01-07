@@ -1,9 +1,9 @@
 # Memory Management Simulator — Design Document
 
 ## 1. Memory Layout & Assumptions
-Physical memory is modeled as a contiguous array divided into fixed‑size frames.  
+Physical memory is modeled as a contiguous array divided into fixed‑size frames(congigurable by user).  
 Virtual memory provides each  process with its own address space, and
-page tables map virtual pages to physical frames.
+page tables map virtual pages to physical frames,page size is same as frame size .
 
 **Assumptions**
 
@@ -47,7 +47,7 @@ Memory is divided into **power‑of‑two** sized blocks.Free contiguous memmory
 
 **Algorithm**
 
-1. round request to nearest power‑of‑two  
+1. round request to nearest power‑of‑two.(using ceil)
 2. split larger blocks recursively  
 3. on free, merge buddies whenever both are free  
 
@@ -65,14 +65,14 @@ Memory is divided into **power‑of‑two** sized blocks.Free contiguous memmory
 ## 4. Cache Hierarchy & Replacement
 Two‑level cache model:
 
-- **L1** — small & fast  
-- **L2** — larger & slower  
-
+- **L1** — Small and  fast (1 cycle latency),checked first.
+- **L2** — Larger but slower (5 + 1 cycle latency) , checked if L1 misses 
+- **Set Associativity:** Caches are divided into "Sets." A memory block can only go into a specific set based on its address.Set index is obtained by formula : *Set Index = (Memory Address / Block Size) % Number of Sets*.
 Lookup order:
 
 L1 → L2 → Main Memory
 
-Replacement policy: **FIFO**.  
+Replacement policy: **FIFO** - The block that entered the cache *earliest* is removed first. This is implemented using a queue structure for each set.  
 
 We track:
 
@@ -107,6 +107,9 @@ Paging maps virtual pages to physical frames.
 4. allocate a frame and install mapping  
 
 Page replacement uses **LRU**.  
+* **Implementation:** Every time a page is accessed, a global `last_used` timestamp is updated in the Page Table Entry.
+* **Eviction:** When a frame is needed, the system inspects all pages currently in RAM and evicts the one with the **oldest** timestamp.
+
 We track page hits, faults, and per‑process frame usage.
 <table>
 <tr>
@@ -184,9 +187,46 @@ This mode does not change allocator behavior — it only **evaluates** it.
 
 
 ---
+## 8. Project Structure
+```text
+MemorySimulator/
+├── docs/                    
+│  └── DesignDoc.md        # Detailed Design Document
+│  └── images/             # images of test outputs used in this docs
+├── include/               # Header files (.h)
+│   ├── buddy.h
+│   ├── cache.h
+│   ├── memory.h
+│   └── vm.h
+├── output/                  # Generated logs ,created when tests run
+│   ├── buddy_log.txt
+│   ├── cache_log.txt
+│   ├── compare_log.txt
+│   ├── linear_log.txt
+│   └── vm_log.txt
+├── src/                     # Implementation files (.cpp) including main.cpp for CLI
+│   ├── buddy.cpp
+│   ├── cache.cpp
+│   ├── main.cpp
+│   ├── memory.cpp
+│   └── vm.cpp
+├── test/                    # Input workloads
+│   ├── buddy_test.txt
+│   ├── cache_access_test.txt
+│   ├── compare_allocation_test.txt
+│   ├── linear_allocation_test.txt
+│   └── vm_access.txt
+├── .gitignore
+├── Makefile                 # Build configuration script
+├── README.md                # Project documentation
+│── all_tests_output.txt     # output of all test cases
+├── run_all_tests.bat        # Windows automated test runner
+└── run_all_tests.sh         # Linux/Mac automated test runner
+```
 
+---
 
-## 8. Limitations & Simplifications
+## 9. Limitations & Simplifications
 
 * Implicit demand paging: unmapped pages trigger a page fault and are automatically mapped (no segmentation faults).
 * Heap & paging are independent: allocators manage heap; paging manages frames/page tables separately.
@@ -196,7 +236,7 @@ This mode does not change allocator behavior — it only **evaluates** it.
 
 ---
 
-## 9. Testing & Validation
+## 10. Testing & Validation
 
   I did the following tests
 
@@ -213,8 +253,9 @@ Screenshots and the demo video and output files  explained the correctness of te
 
 ---
 
-## 10. Conclusion
+## 11. Conclusion
 I implemented the memory management simulator including buddy systems ,linear allocation,cache ,virtual memory . I added the test cases and their results i verified all of them were correct showing correct implementation .
+
 
 
 
