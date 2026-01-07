@@ -2,13 +2,12 @@
 
 ## 1. Memory Layout & Assumptions
 Physical memory is modeled as a contiguous array divided into fixed‑size frames.  
-Virtual memory provides each (logical) process with its own address space, and
+Virtual memory provides each  process with its own address space, and
 page tables map virtual pages to physical frames.
 
 **Assumptions**
 
-- fixed page/frame size  
-- frames come from a **global pool**  
+- fixed page/frame size   
 - demand‑paging: pages are created on first access (page fault)  
 - statistics are simulated (not hardware‑measured)
 
@@ -16,22 +15,22 @@ Virtual Addr → Page Table → Physical Addr → Cache → Main Memor
 
 ---
 
-## 2. Allocation Strategies (FF, BF, WF)
+## 2. Allocation Strategies (First_fit, Best_Fit, Worst_Fit)
 
-A free‑list tracks blocks inside a simulated heap.
+A free‑list tracks blocks inside a simulated heap.Free contiguous memmory are grouped together as required.
 
-| Strategy   | Description                         | Trade‑off                         |
-|------------|-------------------------------------|-----------------------------------|
-| First Fit  | first block large enough            | fast, may fragment                |
-| Best Fit   | smallest block that fits           | less waste, slower                |
-| Worst Fit  | largest available block            | preserves big gaps, may waste     |
+| Strategy   | Description                         | 
+|------------|-------------------------------------|
+| First Fit  | first block large enough            |
+| Best Fit   | smallest block that fits           |
+| Worst Fit  | largest available block            |
 
-Fragmentation and utilization statistics are collected to compare behavior.
+Fragmentation and utilization statistics are present in comparision table.
 
----
+
 
 ## 3. Buddy System Design
-Memory is divided into **power‑of‑two** sized blocks.
+Memory is divided into **power‑of‑two** sized blocks.Free contiguous memmory are grouped together as required.
 
 **Algorithm**
 
@@ -39,8 +38,10 @@ Memory is divided into **power‑of‑two** sized blocks.
 2. split larger blocks recursively  
 3. on free, merge buddies whenever both are free  
 
-**Pros:** fast split/merge, zero external fragmentation  
-**Cons:** possible internal fragmentation
+ fast split/merge, zero external fragmentation  
+ possible internal fragmentation
+
+![Diagram](images/buddy.png)
 
 
 ---
@@ -183,4 +184,5 @@ Screenshots and the demo video illustrate expected behavior.
 The simulator integrates allocation, paging, and caching into one framework,
 highlighting performance and fragmentation trade‑offs while staying
 transparent and educational.
+
 
