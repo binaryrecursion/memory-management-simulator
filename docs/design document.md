@@ -53,7 +53,10 @@ Memory is divided into **power‑of‑two** sized blocks.Free contiguous memmory
  fast split/merge, zero external fragmentation  
  possible internal fragmentation
 
-![Diagram](images/buddy.png)
+<p align="center">
+  <img src="images/buddy.png" width="43%" height="350">
+</p>
+
 
 
 ---
@@ -137,21 +140,9 @@ We track page hits, faults, and per‑process frame usage.
 
 
 
-## 7. Frame Reuse & Multi‑Process Behavior
-Frames belong to a **global frame pool**.
 
-- when a frame is evicted from Process‑A  
-- its page‑table entry is **invalidated**  
-- the frame may be reassigned to Process‑B  
 
-> This mirrors real OS behavior: frames move between processes, while
-> page‑table entries remain process‑specific and are updated safely.
-
-Advanced sharing (copy‑on‑write, shared libraries) is **not modeled**.
-
----
-
-## 8. Compare Mode (Allocation Strategy Comparison)
+## 7. Compare Mode (Allocation Strategy Comparison)
 
 The simulator can replay the same workload under multiple strategies  
 (**FF, BF, WF, Buddy**) and report statistics side‑by‑side:
@@ -162,12 +153,15 @@ The simulator can replay the same workload under multiple strategies
 - total allocations and frees  
 
 This mode does not change allocator behavior — it only **evaluates** it.
+<p align="center">
+  <img src="images/compare.png" width="60%">
+</p>
 
 
 ---
 
 
-## 9. Limitations & Simplifications (why we chose them)
+## 8. Limitations & Simplifications (why we chose them)
 
 - **Implicit demand paging** — focus on paging instead of crash behavior  
 - **Heap & paging independent** — simpler, easier to reason about  
@@ -176,9 +170,9 @@ This mode does not change allocator behavior — it only **evaluates** it.
 - **No TLB, interrupts, permissions, or real disk I/O** — reduced complexity  
 ---
 
-## 10. Testing & Validation
+## 9. Testing & Validation
 
-Workloads exercise:
+  I did the following tests
 
 - allocation & fragmentation  
 - buddy split/merge behavior  
@@ -186,17 +180,16 @@ Workloads exercise:
 - cache hit/miss patterns  
 - strategy comparison  
 
-Outputs go to `output/`, with combined results in:
+Outputs go to `output/`, while combined results goes in all_tests_output.txt.
 
 
-Screenshots and the demo video illustrate expected behavior.
+Screenshots and the demo video and output files  explained the correctness of test cases.
 
 ---
 
-## 11. Conclusion
-The simulator integrates allocation, paging, and caching into one framework,
-highlighting performance and fragmentation trade‑offs while staying
-transparent and educational.
+## 10. Conclusion
+I implemented the memory management simulator including buddy systems ,linear allocation,cache ,virtual memory . I added the test cases and their results i verified all of them were correct showing correct implementation .
+
 
 
 
