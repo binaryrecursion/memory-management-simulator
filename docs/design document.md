@@ -9,7 +9,7 @@ page tables map virtual pages to physical frames.
 
 - fixed page/frame size   
 - demand‑paging: pages are created on first access (page fault)  
-- statistics are simulated (not hardware‑measured)
+
 
 Virtual Addr → Page Table → Physical Addr → Cache → Main Memor
 
@@ -214,6 +214,7 @@ Screenshots and the demo video and output files  explained the correctness of te
 
 ## 10. Conclusion
 I implemented the memory management simulator including buddy systems ,linear allocation,cache ,virtual memory . I added the test cases and their results i verified all of them were correct showing correct implementation .
+
 
 
 
