@@ -99,6 +99,7 @@ run_tests.bat
 ## Demo Video
 
 https://drive.google.com/file/d/11ZG9KcEeEBjVAhyUlZ9K2osP86sQktJB/view?usp=sharing
+increase the quality to 1080 p and initially few seconds the quality is pretty poor but after 5-10 seconds it becomes good
 
 ---
 ## Assumptions & Simplifications
